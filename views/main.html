@@ -1,13 +1,537 @@
 <div class="wrapper wrapper-content animated fadeInRight">
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="text-center m-t-lg">
-                <h1>
-                    {{main.helloText}}
-                </h1>
-                <small>
-                    {{main.descriptionText}}
-                </small>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>Filters</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <select class="select2_demo_3 form-control select2-hidden-accessible" ng-model="selected_lc">
+                                    <option ng-repeat="(id, lc) in lcs" value="{{id}}">{{lc.name}}</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <select class="select2_demo_3 form-control select2-hidden-accessible" ng-model="actual_period" ng-change="filter_operations(actual_period,actual_program)">
+                                    <option value="Year">Year</option>
+                                    <option value="Q1">Quarter 1</option>
+                                    <option value="Q2">Quarter 2</option>
+                                    <option value="Q3">Quarter 3</option>
+                                    <option value="Q4">Quarter 4</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <select class="select2_demo_3 form-control select2-hidden-accessible" ng-model="actual_program" ng-change="filter_operations(actual_period,actual_program)">
+                                    <option value="All">All</option>
+                                    <option value="oGV">oGV</option>
+                                    <option value="iGV">iGV</option>
+                                    <option value="oGT">oGT/GE</option>
+                                    <option value="iGT">iGT/GE</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <span class="label label-success pull-right">Year</span>
+                        <h5>Applications</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h1 class="no-margins">{{total_applicants}}</h1>
+                                <div class="font-bold text-navy">44% <i class="fa fa-level-up"></i> <small>on applicants</small></div>
+                            </div>
+                            <div class="col-md-6">
+                                <h1 class="no-margins">{{total_applications}}</h1>
+                                <div class="font-bold text-navy">22% <i class="fa fa-level-up"></i> <small>on applications</small></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <span class="label label-success pull-right">Year</span>
+                        <h5>Accepteds</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h1 class="no-margins">{{total_accepteds}}</h1>
+                                <div class="font-bold text-navy">44% <i class="fa fa-level-up"></i> <small>on applicants</small></div>
+                            </div>
+                            <div class="col-md-6">
+                                <h1 class="no-margins">{{total_acceptions}}</h1>
+                                <div class="font-bold text-navy">22% <i class="fa fa-level-up"></i> <small>on applications</small></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <span class="label label-success pull-right">Year</span>
+                        <h5>Apds</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <h1 class="no-margins">{{total_approveds}}</h1>
+                        <div class="stat-percent font-bold text-success">98% <i class="fa fa-bolt"></i></div>
+                        <small>approveds</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <span class="label label-success pull-right">Year</span>
+                        <h5>RE</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <h1 class="no-margins">{{total_realizes}}</h1>
+                        <div class="stat-percent font-bold text-success">98% <i class="fa fa-bolt"></i></div>
+                        <small>realizes</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>National Ranking</h5>
+                        <div class="ibox-tools">
+                            <span class="label label-success-light pull-right">{{actual_period}}</span>
+                            <span class="label label-warning-light pull-right">{{actual_program}}</span>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        <div>
+                            <div class="feed-activity-list">
+                                <!--<div class="text-center">
+                                    <button class="btn btn-success" ng-click="order_ranking()">Listar</button>
+                                </div>-->
+                                {{order_ranking()}}
+                                <div class="feed-element" ng-repeat="lc in national_ranking track by $index">
+                                    <a href="profile.html" class="pull-left">
+                                        <img alt="image" class="img-circle" src="img/profile.jpg">
+                                    </a>
+                                    <div class="media-body ">
+                                        <small class="pull-right"><strong>{{$index}}</strong> </small>
+                                        AIESEC in <strong>{{lc.name}}</strong> <br>
+                                        <small class="text-muted">cluster 4 - {{lc.ranking}} APDs</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-8">
+                <div class="row">
+                    
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="ibox float-e-margins">
+                            <div class="ibox-title">
+                                <span class="label label-success pull-right">Year</span>
+                                <h5>Plan x Done - oGV</h5>
+                            </div>
+                            <div class="ibox-content">
+                                <table class="table table-hover no-margins">
+                                    <thead>
+                                        <tr>
+                                            <th>Month</th>
+                                            <th>2015</th>
+                                            <th>2016</th>
+                                            <th>Plan</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><small>Jan</small></td>
+                                            <td>{{analysis[1]['person'][2015][1]['total_approvals']['doc_count']}}</td>
+                                            <td>{{analysis[1]['person'][2016][1]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>350</td>
+                                        </tr>
+                                        <tr>
+                                            <td><small>Feb</small></td>
+                                            <td>{{analysis[1]['person'][2015][2]['total_approvals']['doc_count']}}</td>
+                                            <td>{{analysis[1]['person'][2016][2]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>350</td>
+                                        </tr>
+                                        <tr>
+                                            <td><small>Mar</small></td>
+                                            <td>{{analysis[1]['person'][2015][3]['total_approvals']['doc_count']}}</td>
+                                            <td>{{analysis[1]['person'][2016][3]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>350</td>
+                                        </tr>
+                                        <tr>
+                                            <td><small>Apr</small></td>
+                                            <td>{{analysis[1]['person'][2015][4]['total_approvals']['doc_count']}}</td>
+                                            <td>{{analysis[1]['person'][2016][4]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>350</td>
+                                        </tr>
+                                        <tr>
+                                            <td><small>May</small></td>
+                                            <td>{{analysis[1]['person'][2015][5]['total_approvals']['doc_count']}}</td>
+                                            <td>{{analysis[1]['person'][2016][5]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>350</td>
+                                        </tr>
+                                        <tr>
+                                            <td><small>Jun</small></td>
+                                            <td>{{analysis[1]['person'][2015][6]['total_approvals']['doc_count']}}</td>
+                                            <td>{{analysis[1]['person'][2016][6]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>350</td>
+                                        </tr>
+                                        <tr>
+                                            <td><small>Jul</small></td>
+                                            <td>{{analysis[1]['person'][2015][7]['total_approvals']['doc_count']}}</td>
+                                            <td>{{analysis[1]['person'][2016][7]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>350</td>
+                                        </tr>
+                                        <tr>
+                                            <td><small>Ago</small></td>
+                                            <td>{{analysis[1]['person'][2015][8]['total_approvals']['doc_count']}}</td>
+                                            <td>{{analysis[1]['person'][2016][8]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>350</td>
+                                        </tr>
+                                        <tr>
+                                            <td><small>Set</small></td>
+                                            <td>{{analysis[1]['person'][2015][9]['total_approvals']['doc_count']}}</td>
+                                            <td>{{analysis[1]['person'][2016][9]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>350</td>
+                                        </tr>
+                                        <tr>
+                                            <td><small>Oct</small></td>
+                                            <td>{{analysis[1]['person'][2015][10]['total_approvals']['doc_count']}}</td>
+                                            <td>{{analysis[1]['person'][2016][10]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>350</td>
+                                        </tr>
+                                        <tr>
+                                            <td><small>Nov</small></td>
+                                            <td>{{analysis[1]['person'][2015][11]['total_approvals']['doc_count']}}</td>
+                                            <td>{{analysis[1]['person'][2016][11]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>350</td>
+                                        </tr>
+                                        <tr>
+                                            <td><small>Dec</small></td>
+                                            <td>{{analysis[1]['person'][2015][12]['total_approvals']['doc_count']}}</td>
+                                            <td>{{analysis[1]['person'][2016][12]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>350</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="ibox float-e-margins">
+                            <div class="ibox-title">
+                                <span class="label label-success pull-right">Year</span>
+                                <h5>Plan x Done - iGV</h5>
+                            </div>
+                            <div class="ibox-content">
+                                <table class="table table-hover no-margins">
+                                    <thead>
+                                        <tr>
+                                            <th>Month</th>
+                                            <th>2015</th>
+                                            <th>2016</th>
+                                            <th>Plan</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><small>Jan</small></td>
+                                            <td>{{analysis[1]['opportunity'][2015][1]['total_approvals']['doc_count']}}</td>
+                                            <td>{{analysis[1]['opportunity'][2016][1]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>350</td>
+                                        </tr>
+                                        <tr>
+                                            <td><small>Feb</small></td>
+                                            <td>{{analysis[1]['opportunity'][2015][3]['total_approvals']['doc_count']}}</td>
+                                            <td>{{analysis[1]['opportunity'][2016][2]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>350</td>
+                                        </tr>
+                                        <tr>
+                                            <td><small>Mar</small></td>
+                                            <td>{{analysis[1]['opportunity'][2015][3]['total_approvals']['doc_count']}}</td>
+                                            <td>{{analysis[1]['opportunity'][2016][3]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>350</td>
+                                        </tr>
+                                        <tr>
+                                            <td><small>Apr</small></td>
+                                            <td>{{analysis[1]['opportunity'][2015][4]['total_approvals']['doc_count']}}</td>
+                                            <td>{{analysis[1]['opportunity'][2016][4]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>350</td>
+                                        </tr>
+                                        <tr>
+                                            <td><small>May</small></td>
+                                            <td>{{analysis[1]['opportunity'][2015][5]['total_approvals']['doc_count']}}</td>
+                                            <td>{{analysis[1]['opportunity'][2016][5]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>350</td>
+                                        </tr>
+                                        <tr>
+                                            <td><small>Jun</small></td>
+                                            <td>{{analysis[1]['opportunity'][2015][6]['total_approvals']['doc_count']}}</td>
+                                            <td>{{analysis[1]['opportunity'][2016][6]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>350</td>
+                                        </tr>
+                                        <tr>
+                                            <td><small>Jul</small></td>
+                                            <td>{{analysis[1]['opportunity'][2015][7]['total_approvals']['doc_count']}}</td>
+                                            <td>{{analysis[1]['opportunity'][2016][7]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>350</td>
+                                        </tr>
+                                        <tr>
+                                            <td><small>Ago</small></td>
+                                            <td>{{analysis[1]['opportunity'][2015][8]['total_approvals']['doc_count']}}</td>
+                                            <td>{{analysis[1]['opportunity'][2016][8]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>350</td>
+                                        </tr>
+                                        <tr>
+                                            <td><small>Set</small></td>
+                                            <td>{{analysis[1]['opportunity'][2015][9]['total_approvals']['doc_count']}}</td>
+                                            <td>{{analysis[1]['opportunity'][2016][9]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>350</td>
+                                        </tr>
+                                        <tr>
+                                            <td><small>Oct</small></td>
+                                            <td>{{analysis[1]['opportunity'][2015][10]['total_approvals']['doc_count']}}</td>
+                                            <td>{{analysis[1]['opportunity'][2016][10]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>350</td>
+                                        </tr>
+                                        <tr>
+                                            <td><small>Nov</small></td>
+                                            <td>{{analysis[1]['opportunity'][2015][11]['total_approvals']['doc_count']}}</td>
+                                            <td>{{analysis[1]['opportunity'][2016][11]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>350</td>
+                                        </tr>
+                                        <tr>
+                                            <td><small>Dec</small></td>
+                                            <td>{{analysis[1]['opportunity'][2015][12]['total_approvals']['doc_count']}}</td>
+                                            <td>{{analysis[1]['opportunity'][2016][12]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>350</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="ibox float-e-margins">
+                            <div class="ibox-title">
+                                <span class="label label-success pull-right">Year</span>
+                                <h5>Plan x Done - oGT/GE</h5>
+                            </div>
+                            <div class="ibox-content">
+                                <table class="table table-hover no-margins">
+                                    <thead>
+                                        <tr>
+                                            <th>Month</th>
+                                            <th>2015</th>
+                                            <th>2016</th>
+                                            <th>Plan</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><small>Jan</small></td>
+                                            <td>{{analysis[2]['person'][2015][1]['total_approvals']['doc_count']}}</td>
+                                            <td>{{analysis[2]['person'][2016][1]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>350</td>
+                                        </tr>
+                                        <tr>
+                                            <td><small>Feb</small></td>
+                                            <td>{{analysis[2]['person'][2015][2]['total_approvals']['doc_count']}}</td>
+                                            <td>{{analysis[2]['person'][2016][2]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>350</td>
+                                        </tr>
+                                        <tr>
+                                            <td><small>Mar</small></td>
+                                            <td>{{analysis[2]['person'][2015][3]['total_approvals']['doc_count']}}</td>
+                                            <td>{{analysis[2]['person'][2016][3]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>350</td>
+                                        </tr>
+                                        <tr>
+                                            <td><small>Apr</small></td>
+                                            <td>{{analysis[2]['person'][2015][4]['total_approvals']['doc_count']}}</td>
+                                            <td>{{analysis[2]['person'][2016][4]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>350</td>
+                                        </tr>
+                                        <tr>
+                                            <td><small>May</small></td>
+                                            <td>{{analysis[2]['person'][2015][5]['total_approvals']['doc_count']}}</td>
+                                            <td>{{analysis[2]['person'][2016][5]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>350</td>
+                                        </tr>
+                                        <tr>
+                                            <td><small>Jun</small></td>
+                                            <td>{{analysis[2]['person'][2015][5]['total_approvals']['doc_count']}}</td>
+                                            <td>{{analysis[2]['person'][2016][5]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>350</td>
+                                        </tr>
+                                        <tr>
+                                            <td><small>Jul</small></td>
+                                            <td>{{analysis[2]['person'][2015][6]['total_approvals']['doc_count']}}</td>
+                                            <td>{{analysis[2]['person'][2016][6]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>350</td>
+                                        </tr>
+                                        <tr>
+                                            <td><small>Ago</small></td>
+                                            <td>{{analysis[2]['person'][2015][7]['total_approvals']['doc_count']}}</td>
+                                            <td>{{analysis[2]['person'][2016][7]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>350</td>
+                                        </tr>
+                                        <tr>
+                                            <td><small>Set</small></td>
+                                            <td>{{analysis[2]['person'][2015][8]['total_approvals']['doc_count']}}</td>
+                                            <td>{{analysis[2]['person'][2016][8]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>350</td>
+                                        </tr>
+                                        <tr>
+                                            <td><small>Oct</small></td>
+                                            <td>{{analysis[2]['person'][2015][10]['total_approvals']['doc_count']}}</td>
+                                            <td>{{analysis[2]['person'][2016][10]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>350</td>
+                                        </tr>
+                                        <tr>
+                                            <td><small>Nov</small></td>
+                                            <td>{{analysis[2]['person'][2015][11]['total_approvals']['doc_count']}}</td>
+                                            <td>{{analysis[2]['person'][2016][11]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>350</td>
+                                        </tr>
+                                        <tr>
+                                            <td><small>Dec</small></td>
+                                            <td>{{analysis[2]['person'][2015][12]['total_approvals']['doc_count']}}</td>
+                                            <td>{{analysis[2]['person'][2016][12]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>350</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="ibox float-e-margins">
+                            <div class="ibox-title">
+                                <span class="label label-success pull-right">Year</span>
+                                <h5>Plan x Done - iGT/GE</h5>
+                            </div>
+                            <div class="ibox-content">
+                                <table class="table table-hover no-margins">
+                                    <thead>
+                                        <tr>
+                                            <th>Month</th>
+                                            <th>2015</th>
+                                            <th>2016</th>
+                                            <th>Plan</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><small>Jan</small></td>
+                                            <td>{{analysis[2]['opportunity'][2015][1]['total_approvals']['doc_count']}}</td>
+                                            <td>{{analysis[2]['opportunity'][2016][1]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>350</td>
+                                        </tr>
+                                        <tr>
+                                            <td><small>Feb</small></td>
+                                            <td>{{analysis[2]['opportunity'][2015][2]['total_approvals']['doc_count']}}</td>
+                                            <td>{{analysis[2]['opportunity'][2016][2]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>350</td>
+                                        </tr>
+                                        <tr>
+                                            <td><small>Mar</small></td>
+                                            <td>{{analysis[2]['opportunity'][2015][3]['total_approvals']['doc_count']}}</td>
+                                            <td>{{analysis[2]['opportunity'][2016][3]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>350</td>
+                                        </tr>
+                                        <tr>
+                                            <td><small>Apr</small></td>
+                                            <td>{{analysis[2]['opportunity'][2015][4]['total_approvals']['doc_count']}}</td>
+                                            <td>{{analysis[2]['opportunity'][2016][4]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>350</td>
+                                        </tr>
+                                        <tr>
+                                            <td><small>May</small></td>
+                                            <td>{{analysis[2]['opportunity'][2015][5]['total_approvals']['doc_count']}}</td>
+                                            <td>{{analysis[2]['opportunity'][2016][5]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>350</td>
+                                        </tr>
+                                        <tr>
+                                            <td><small>Jun</small></td>
+                                            <td>{{analysis[2]['opportunity'][2015][6]['total_approvals']['doc_count']}}</td>
+                                            <td>{{analysis[2]['opportunity'][2016][6]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>350</td>
+                                        </tr>
+                                        <tr>
+                                            <td><small>Jul</small></td>
+                                            <td>{{analysis[2]['opportunity'][2015][7]['total_approvals']['doc_count']}}</td>
+                                            <td>{{analysis[2]['opportunity'][2016][7]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>350</td>
+                                        </tr>
+                                        <tr>
+                                            <td><small>Ago</small></td>
+                                            <td>{{analysis[2]['opportunity'][2015][8]['total_approvals']['doc_count']}}</td>
+                                            <td>{{analysis[2]['opportunity'][2016][8]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>350</td>
+                                        </tr>
+                                        <tr>
+                                            <td><small>Set</small></td>
+                                            <td>{{analysis[2]['opportunity'][2015][9]['total_approvals']['doc_count']}}</td>
+                                            <td>{{analysis[2]['opportunity'][2016][9]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>350</td>
+                                        </tr>
+                                        <tr>
+                                            <td><small>Oct</small></td>
+                                            <td>{{analysis[2]['opportunity'][2015][10]['total_approvals']['doc_count']}}</td>
+                                            <td>{{analysis[2]['opportunity'][2016][10]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>350</td>
+                                        </tr>
+                                        <tr>
+                                            <td><small>Nov</small></td>
+                                            <td>{{analysis[2]['opportunity'][2015][11]['total_approvals']['doc_count']}}</td>
+                                            <td>{{analysis[2]['opportunity'][2016][11]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>350</td>
+                                        </tr>
+                                        <tr>
+                                            <td><small>Dec</small></td>
+                                            <td>{{analysis[2]['opportunity'][2015][12]['total_approvals']['doc_count']}}</td>
+                                            <td>{{analysis[2]['opportunity'][2016][12]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>350</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="text-center m-t-lg">
+                    <h1>
+                        {{main.helloText}}
+                    </h1>
+                    <small>
+                        {{main.descriptionText}}
+                    </small>
+                </div>
             </div>
         </div>
     </div>
