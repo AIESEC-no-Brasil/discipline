@@ -106,7 +106,7 @@ function MainCtrl($http,$scope,$localStorage,$sessionStorage) {
 	}
 
 	function big_init() {
-	    $http.get('http://localhost:8080/simple_token', {}).then(
+	    $http.get('http://bazicon.aiesec.org.br/simple_token', {}).then(
 	        function(response) {
 	            token = response.data.token;
 
