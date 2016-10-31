@@ -33,7 +33,7 @@ function MainCtrl($http,$scope) {
 	$scope.actual_period = 'Year';
 	$scope.national_ranking = [];
 
-    $http.get('http://localhost:8080/simple_token', {}).then(
+    $http.get('http://bazicon.aiesec.org.br/simple_token', {}).then(
         function(response) {
             token = response.data.token;
 
