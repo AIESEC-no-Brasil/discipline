@@ -20,6 +20,8 @@
                                     <option value="Q2">Quarter 2</option>
                                     <option value="Q3">Quarter 3</option>
                                     <option value="Q4">Quarter 4</option>
+                                    <option value="S1">Semester 1</option>
+                                    <option value="S2">Semester 2</option>
                                 </select>
                             </div>
                             <div class="col-md-4">
@@ -47,11 +49,11 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <h1 class="no-margins">{{total_applicants}}</h1>
-                                <div class="font-bold text-navy">44% <i class="fa fa-level-up"></i> <small>on applicants</small></div>
+                                <div class="font-bold text-navy"><!--44% <i class="fa fa-level-up"></i>--> <small>on applicants</small></div>
                             </div>
                             <div class="col-md-6">
                                 <h1 class="no-margins">{{total_applications}}</h1>
-                                <div class="font-bold text-navy">22% <i class="fa fa-level-up"></i> <small>on applications</small></div>
+                                <div class="font-bold text-navy"><!--22% <i class="fa fa-level-up"></i>--> <small>on applications</small></div>
                             </div>
                         </div>
                     </div>
@@ -67,11 +69,11 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <h1 class="no-margins">{{total_accepteds}}</h1>
-                                <div class="font-bold text-navy">44% <i class="fa fa-level-up"></i> <small>on applicants</small></div>
+                                <div class="font-bold text-navy"><!--44% <i class="fa fa-level-up"></i>--> <small>on applicants</small></div>
                             </div>
                             <div class="col-md-6">
                                 <h1 class="no-margins">{{total_acceptions}}</h1>
-                                <div class="font-bold text-navy">22% <i class="fa fa-level-up"></i> <small>on applications</small></div>
+                                <div class="font-bold text-navy"><!--22% <i class="fa fa-level-up"></i>--> <small>on applications</small></div>
                             </div>
                         </div>
                     </div>
@@ -85,7 +87,7 @@
                     </div>
                     <div class="ibox-content">
                         <h1 class="no-margins">{{total_approveds}}</h1>
-                        <div class="stat-percent font-bold text-success">98% <i class="fa fa-bolt"></i></div>
+                        <!--<div class="stat-percent font-bold text-success">98% <i class="fa fa-bolt"></i></div>-->
                         <small>approveds</small>
                     </div>
                 </div>
@@ -98,7 +100,7 @@
                     </div>
                     <div class="ibox-content">
                         <h1 class="no-margins">{{total_realizes}}</h1>
-                        <div class="stat-percent font-bold text-success">98% <i class="fa fa-bolt"></i></div>
+                        <!--<div class="stat-percent font-bold text-success">98% <i class="fa fa-bolt"></i></div>-->
                         <small>realizes</small>
                     </div>
                 </div>
@@ -117,18 +119,17 @@
                     <div class="ibox-content">
                         <div>
                             <div class="feed-activity-list">
-                                <!--<div class="text-center">
-                                    <button class="btn btn-success" ng-click="order_ranking()">Listar</button>
-                                </div>-->
-                                {{order_ranking()}}
+                                <div class="text-center">
+                                    <button class="btn btn-success" ng-click="order_ranking()" ng-show="national_ranking.length == 0">Show!</button>
+                                </div>
                                 <div class="feed-element" ng-repeat="lc in national_ranking track by $index">
                                     <a href="profile.html" class="pull-left">
                                         <img alt="image" class="img-circle" src="img/profile.jpg">
                                     </a>
                                     <div class="media-body ">
-                                        <small class="pull-right"><strong>{{$index}}</strong> </small>
+                                        <small class="pull-right"><strong>{{$index + 1}}</strong> </small>
                                         AIESEC in <strong>{{lc.name}}</strong> <br>
-                                        <small class="text-muted">cluster 4 - {{lc.ranking}} APDs</small>
+                                        <small class="text-muted">cluster X - <strong>{{lc.ranking}}</strong> APDs</small>
                                     </div>
                                 </div>
                             </div>
@@ -160,74 +161,146 @@
                                     <tbody>
                                         <tr>
                                             <td><small>Jan</small></td>
-                                            <td>{{analysis[1]['person'][2015][1]['total_approvals']['doc_count']}}</td>
-                                            <td>{{analysis[1]['person'][2016][1]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>{{lcs[selected_lc.toString()]['analytics'][2015][1][1]['person']['total_approvals']['doc_count']}}</td>
+                                            <td>
+                                                {{lcs[selected_lc.toString()]['analytics'][2016][1][1]['person']['total_approvals']['doc_count']}} 
+                                                ({{calc_growth(
+                                                    lcs[selected_lc.toString()]['analytics'][2015][1][1]['person']['total_approvals']['doc_count'],
+                                                    lcs[selected_lc.toString()]['analytics'][2016][1][1]['person']['total_approvals']['doc_count']
+                                                ) | number:2}}%)
+                                            </td>
                                             <td>350</td>
                                         </tr>
                                         <tr>
                                             <td><small>Feb</small></td>
-                                            <td>{{analysis[1]['person'][2015][2]['total_approvals']['doc_count']}}</td>
-                                            <td>{{analysis[1]['person'][2016][2]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>{{lcs[selected_lc.toString()]['analytics'][2015][2][1]['person']['total_approvals']['doc_count']}}</td>
+                                            <td>
+                                                {{lcs[selected_lc.toString()]['analytics'][2016][2][1]['person']['total_approvals']['doc_count']}} 
+                                                ({{calc_growth(
+                                                    lcs[selected_lc.toString()]['analytics'][2015][2][1]['person']['total_approvals']['doc_count'],
+                                                    lcs[selected_lc.toString()]['analytics'][2016][2][1]['person']['total_approvals']['doc_count']
+                                                ) | number:2}}%)
+                                            </td>
                                             <td>350</td>
                                         </tr>
                                         <tr>
                                             <td><small>Mar</small></td>
-                                            <td>{{analysis[1]['person'][2015][3]['total_approvals']['doc_count']}}</td>
-                                            <td>{{analysis[1]['person'][2016][3]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>{{lcs[selected_lc.toString()]['analytics'][2015][3][1]['person']['total_approvals']['doc_count']}}</td>
+                                            <td>
+                                                {{lcs[selected_lc.toString()]['analytics'][2016][3][1]['person']['total_approvals']['doc_count']}} 
+                                                ({{calc_growth(
+                                                    lcs[selected_lc.toString()]['analytics'][2015][3][1]['person']['total_approvals']['doc_count'],
+                                                    lcs[selected_lc.toString()]['analytics'][2016][3][1]['person']['total_approvals']['doc_count']
+                                                    ) | number:2}}%)
+                                            </td>
                                             <td>350</td>
                                         </tr>
                                         <tr>
                                             <td><small>Apr</small></td>
-                                            <td>{{analysis[1]['person'][2015][4]['total_approvals']['doc_count']}}</td>
-                                            <td>{{analysis[1]['person'][2016][4]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>{{lcs[selected_lc.toString()]['analytics'][2015][4][1]['person']['total_approvals']['doc_count']}}</td>
+                                            <td>
+                                                {{lcs[selected_lc.toString()]['analytics'][2016][4][1]['person']['total_approvals']['doc_count']}} 
+                                                ({{calc_growth(
+                                                    lcs[selected_lc.toString()]['analytics'][2015][4][1]['person']['total_approvals']['doc_count'],
+                                                    lcs[selected_lc.toString()]['analytics'][2016][4][1]['person']['total_approvals']['doc_count']
+                                                    ) | number:2}}%)
+                                            </td>
                                             <td>350</td>
                                         </tr>
                                         <tr>
                                             <td><small>May</small></td>
-                                            <td>{{analysis[1]['person'][2015][5]['total_approvals']['doc_count']}}</td>
-                                            <td>{{analysis[1]['person'][2016][5]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>{{lcs[selected_lc.toString()]['analytics'][2015][5][1]['person']['total_approvals']['doc_count']}}</td>
+                                            <td>
+                                                {{lcs[selected_lc.toString()]['analytics'][2016][5][1]['person']['total_approvals']['doc_count']}} 
+                                                ({{calc_growth(
+                                                    lcs[selected_lc.toString()]['analytics'][2015][5][1]['person']['total_approvals']['doc_count'],
+                                                    lcs[selected_lc.toString()]['analytics'][2016][5][1]['person']['total_approvals']['doc_count']
+                                                    ) | number:2}}%)
+                                            </td>
                                             <td>350</td>
                                         </tr>
                                         <tr>
                                             <td><small>Jun</small></td>
-                                            <td>{{analysis[1]['person'][2015][6]['total_approvals']['doc_count']}}</td>
-                                            <td>{{analysis[1]['person'][2016][6]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>{{lcs[selected_lc.toString()]['analytics'][2015][6][1]['person']['total_approvals']['doc_count']}}</td>
+                                            <td>
+                                                {{lcs[selected_lc.toString()]['analytics'][2016][6][1]['person']['total_approvals']['doc_count']}} 
+                                                ({{calc_growth(
+                                                    lcs[selected_lc.toString()]['analytics'][2015][6][1]['person']['total_approvals']['doc_count'],
+                                                    lcs[selected_lc.toString()]['analytics'][2016][6][1]['person']['total_approvals']['doc_count']
+                                                    ) | number:2}}%)
+                                            </td>
                                             <td>350</td>
                                         </tr>
                                         <tr>
                                             <td><small>Jul</small></td>
-                                            <td>{{analysis[1]['person'][2015][7]['total_approvals']['doc_count']}}</td>
-                                            <td>{{analysis[1]['person'][2016][7]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>{{lcs[selected_lc.toString()]['analytics'][2015][7][1]['person']['total_approvals']['doc_count']}}</td>
+                                            <td>
+                                                {{lcs[selected_lc.toString()]['analytics'][2016][7][1]['person']['total_approvals']['doc_count']}} 
+                                                ({{calc_growth(
+                                                    lcs[selected_lc.toString()]['analytics'][2015][7][1]['person']['total_approvals']['doc_count'],
+                                                    lcs[selected_lc.toString()]['analytics'][2016][7][1]['person']['total_approvals']['doc_count']
+                                                    ) | number:2}}%)
+                                            </td>
                                             <td>350</td>
                                         </tr>
                                         <tr>
                                             <td><small>Ago</small></td>
-                                            <td>{{analysis[1]['person'][2015][8]['total_approvals']['doc_count']}}</td>
-                                            <td>{{analysis[1]['person'][2016][8]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>{{lcs[selected_lc.toString()]['analytics'][2015][8][1]['person']['total_approvals']['doc_count']}}</td>
+                                            <td>
+                                                {{lcs[selected_lc.toString()]['analytics'][2016][8][1]['person']['total_approvals']['doc_count']}} 
+                                                ({{calc_growth(
+                                                    lcs[selected_lc.toString()]['analytics'][2015][8][1]['person']['total_approvals']['doc_count'],
+                                                    lcs[selected_lc.toString()]['analytics'][2016][8][1]['person']['total_approvals']['doc_count']
+                                                    ) | number:2}}%)
+                                            </td>
                                             <td>350</td>
                                         </tr>
                                         <tr>
                                             <td><small>Set</small></td>
-                                            <td>{{analysis[1]['person'][2015][9]['total_approvals']['doc_count']}}</td>
-                                            <td>{{analysis[1]['person'][2016][9]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>{{lcs[selected_lc.toString()]['analytics'][2015][9][1]['person']['total_approvals']['doc_count']}}</td>
+                                            <td>
+                                                {{lcs[selected_lc.toString()]['analytics'][2016][9][1]['person']['total_approvals']['doc_count']}} 
+                                                ({{calc_growth(
+                                                    lcs[selected_lc.toString()]['analytics'][2015][9][1]['person']['total_approvals']['doc_count'],
+                                                    lcs[selected_lc.toString()]['analytics'][2016][9][1]['person']['total_approvals']['doc_count']
+                                                    ) | number:2}}%)
+                                            </td>
                                             <td>350</td>
                                         </tr>
                                         <tr>
                                             <td><small>Oct</small></td>
-                                            <td>{{analysis[1]['person'][2015][10]['total_approvals']['doc_count']}}</td>
-                                            <td>{{analysis[1]['person'][2016][10]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>{{lcs[selected_lc.toString()]['analytics'][2015][10][1]['person']['total_approvals']['doc_count']}}</td>
+                                            <td>
+                                                {{lcs[selected_lc.toString()]['analytics'][2016][10][1]['person']['total_approvals']['doc_count']}} 
+                                                ({{calc_growth(
+                                                    lcs[selected_lc.toString()]['analytics'][2015][10][1]['person']['total_approvals']['doc_count'],
+                                                    lcs[selected_lc.toString()]['analytics'][2016][10][1]['person']['total_approvals']['doc_count']
+                                                    ) | number:2}}%)
+                                            </td>
                                             <td>350</td>
                                         </tr>
                                         <tr>
                                             <td><small>Nov</small></td>
-                                            <td>{{analysis[1]['person'][2015][11]['total_approvals']['doc_count']}}</td>
-                                            <td>{{analysis[1]['person'][2016][11]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>{{lcs[selected_lc.toString()]['analytics'][2015][11][1]['person']['total_approvals']['doc_count']}}</td>
+                                            <td>
+                                                {{lcs[selected_lc.toString()]['analytics'][2016][11][1]['person']['total_approvals']['doc_count']}} 
+                                                ({{calc_growth(
+                                                    lcs[selected_lc.toString()]['analytics'][2015][11][1]['person']['total_approvals']['doc_count'],
+                                                    lcs[selected_lc.toString()]['analytics'][2016][11][1]['person']['total_approvals']['doc_count']
+                                                    ) | number:2}}%)
+                                            </td>
                                             <td>350</td>
                                         </tr>
                                         <tr>
                                             <td><small>Dec</small></td>
-                                            <td>{{analysis[1]['person'][2015][12]['total_approvals']['doc_count']}}</td>
-                                            <td>{{analysis[1]['person'][2016][12]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>{{lcs[selected_lc.toString()]['analytics'][2015][12][1]['person']['total_approvals']['doc_count']}}</td>
+                                            <td>
+                                                {{lcs[selected_lc.toString()]['analytics'][2016][12][1]['person']['total_approvals']['doc_count']}} 
+                                                ({{calc_growth(
+                                                    lcs[selected_lc.toString()]['analytics'][2015][12][1]['person']['total_approvals']['doc_count'],
+                                                    lcs[selected_lc.toString()]['analytics'][2016][12][1]['person']['total_approvals']['doc_count']
+                                                    ) | number:2}}%)
+                                            </td>
                                             <td>350</td>
                                         </tr>
                                     </tbody>
@@ -254,74 +327,146 @@
                                     <tbody>
                                         <tr>
                                             <td><small>Jan</small></td>
-                                            <td>{{analysis[1]['opportunity'][2015][1]['total_approvals']['doc_count']}}</td>
-                                            <td>{{analysis[1]['opportunity'][2016][1]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>{{lcs[selected_lc.toString()]['analytics'][2015][1][1]['opportunity']['total_approvals']['doc_count']}}</td>
+                                            <td>
+                                                {{lcs[selected_lc.toString()]['analytics'][2016][1][1]['opportunity']['total_approvals']['doc_count']}} 
+                                                ({{calc_growth(
+                                                    lcs[selected_lc.toString()]['analytics'][2015][1][1]['opportunity']['total_approvals']['doc_count'],
+                                                    lcs[selected_lc.toString()]['analytics'][2016][1][1]['opportunity']['total_approvals']['doc_count']
+                                                    ) | number:2}}%)
+                                            </td>
                                             <td>350</td>
                                         </tr>
                                         <tr>
                                             <td><small>Feb</small></td>
-                                            <td>{{analysis[1]['opportunity'][2015][3]['total_approvals']['doc_count']}}</td>
-                                            <td>{{analysis[1]['opportunity'][2016][2]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>{{lcs[selected_lc.toString()]['analytics'][2015][2][1]['opportunity']['total_approvals']['doc_count']}}</td>
+                                            <td>
+                                                {{lcs[selected_lc.toString()]['analytics'][2016][2][1]['opportunity']['total_approvals']['doc_count']}} 
+                                                ({{calc_growth(
+                                                    lcs[selected_lc.toString()]['analytics'][2015][2][1]['opportunity']['total_approvals']['doc_count'],
+                                                    lcs[selected_lc.toString()]['analytics'][2016][2][1]['opportunity']['total_approvals']['doc_count']
+                                                    ) | number:2}}%)
+                                            </td>
                                             <td>350</td>
                                         </tr>
                                         <tr>
                                             <td><small>Mar</small></td>
-                                            <td>{{analysis[1]['opportunity'][2015][3]['total_approvals']['doc_count']}}</td>
-                                            <td>{{analysis[1]['opportunity'][2016][3]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>{{lcs[selected_lc.toString()]['analytics'][2015][3][1]['opportunity']['total_approvals']['doc_count']}}</td>
+                                            <td>
+                                                {{lcs[selected_lc.toString()]['analytics'][2016][3][1]['opportunity']['total_approvals']['doc_count']}} 
+                                                ({{calc_growth(
+                                                    lcs[selected_lc.toString()]['analytics'][2015][3][1]['opportunity']['total_approvals']['doc_count'],
+                                                    lcs[selected_lc.toString()]['analytics'][2016][3][1]['opportunity']['total_approvals']['doc_count']
+                                                    ) | number:2}}%)
+                                            </td>
                                             <td>350</td>
                                         </tr>
                                         <tr>
                                             <td><small>Apr</small></td>
-                                            <td>{{analysis[1]['opportunity'][2015][4]['total_approvals']['doc_count']}}</td>
-                                            <td>{{analysis[1]['opportunity'][2016][4]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>{{lcs[selected_lc.toString()]['analytics'][2015][4][1]['opportunity']['total_approvals']['doc_count']}}</td>
+                                            <td>
+                                                {{lcs[selected_lc.toString()]['analytics'][2016][4][1]['opportunity']['total_approvals']['doc_count']}} 
+                                                ({{calc_growth(
+                                                    lcs[selected_lc.toString()]['analytics'][2015][4][1]['opportunity']['total_approvals']['doc_count'],
+                                                    lcs[selected_lc.toString()]['analytics'][2016][4][1]['opportunity']['total_approvals']['doc_count']
+                                                    ) | number:2}}%)
+                                            </td>
                                             <td>350</td>
                                         </tr>
                                         <tr>
                                             <td><small>May</small></td>
-                                            <td>{{analysis[1]['opportunity'][2015][5]['total_approvals']['doc_count']}}</td>
-                                            <td>{{analysis[1]['opportunity'][2016][5]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>{{lcs[selected_lc.toString()]['analytics'][2015][5][1]['opportunity']['total_approvals']['doc_count']}}</td>
+                                            <td>
+                                                {{lcs[selected_lc.toString()]['analytics'][2016][5][1]['opportunity']['total_approvals']['doc_count']}} 
+                                                ({{calc_growth(
+                                                    lcs[selected_lc.toString()]['analytics'][2015][5][1]['opportunity']['total_approvals']['doc_count'],
+                                                    lcs[selected_lc.toString()]['analytics'][2016][5][1]['opportunity']['total_approvals']['doc_count']
+                                                    ) | number:2}}%)
+                                            </td>
                                             <td>350</td>
                                         </tr>
                                         <tr>
                                             <td><small>Jun</small></td>
-                                            <td>{{analysis[1]['opportunity'][2015][6]['total_approvals']['doc_count']}}</td>
-                                            <td>{{analysis[1]['opportunity'][2016][6]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>{{lcs[selected_lc.toString()]['analytics'][2015][6][1]['opportunity']['total_approvals']['doc_count']}}</td>
+                                            <td>
+                                                {{lcs[selected_lc.toString()]['analytics'][2016][6][1]['opportunity']['total_approvals']['doc_count']}} 
+                                                ({{calc_growth(
+                                                    lcs[selected_lc.toString()]['analytics'][2015][6][1]['opportunity']['total_approvals']['doc_count'],
+                                                    lcs[selected_lc.toString()]['analytics'][2016][6][1]['opportunity']['total_approvals']['doc_count']
+                                                    ) | number:2}}%)
+                                            </td>
                                             <td>350</td>
                                         </tr>
                                         <tr>
                                             <td><small>Jul</small></td>
-                                            <td>{{analysis[1]['opportunity'][2015][7]['total_approvals']['doc_count']}}</td>
-                                            <td>{{analysis[1]['opportunity'][2016][7]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>{{lcs[selected_lc.toString()]['analytics'][2015][7][1]['opportunity']['total_approvals']['doc_count']}}</td>
+                                            <td>
+                                                {{lcs[selected_lc.toString()]['analytics'][2016][7][1]['opportunity']['total_approvals']['doc_count']}} 
+                                                ({{calc_growth(
+                                                    lcs[selected_lc.toString()]['analytics'][2015][7][1]['opportunity']['total_approvals']['doc_count'],
+                                                    lcs[selected_lc.toString()]['analytics'][2016][7][1]['opportunity']['total_approvals']['doc_count']
+                                                    ) | number:2}}%)
+                                            </td>
                                             <td>350</td>
                                         </tr>
                                         <tr>
                                             <td><small>Ago</small></td>
-                                            <td>{{analysis[1]['opportunity'][2015][8]['total_approvals']['doc_count']}}</td>
-                                            <td>{{analysis[1]['opportunity'][2016][8]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>{{lcs[selected_lc.toString()]['analytics'][2015][8][1]['opportunity']['total_approvals']['doc_count']}}</td>
+                                            <td>
+                                                {{lcs[selected_lc.toString()]['analytics'][2016][8][1]['opportunity']['total_approvals']['doc_count']}} 
+                                                ({{calc_growth(
+                                                    lcs[selected_lc.toString()]['analytics'][2015][8][1]['opportunity']['total_approvals']['doc_count'],
+                                                    lcs[selected_lc.toString()]['analytics'][2016][8][1]['opportunity']['total_approvals']['doc_count']
+                                                    ) | number:2}}%)
+                                            </td>
                                             <td>350</td>
                                         </tr>
                                         <tr>
                                             <td><small>Set</small></td>
-                                            <td>{{analysis[1]['opportunity'][2015][9]['total_approvals']['doc_count']}}</td>
-                                            <td>{{analysis[1]['opportunity'][2016][9]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>{{lcs[selected_lc.toString()]['analytics'][2015][9][1]['opportunity']['total_approvals']['doc_count']}}</td>
+                                            <td>
+                                                {{lcs[selected_lc.toString()]['analytics'][2016][9][1]['opportunity']['total_approvals']['doc_count']}} 
+                                                ({{calc_growth(
+                                                    lcs[selected_lc.toString()]['analytics'][2015][9][1]['opportunity']['total_approvals']['doc_count'],
+                                                    lcs[selected_lc.toString()]['analytics'][2016][9][1]['opportunity']['total_approvals']['doc_count']
+                                                    ) | number:2}}%)
+                                            </td>
                                             <td>350</td>
                                         </tr>
                                         <tr>
                                             <td><small>Oct</small></td>
-                                            <td>{{analysis[1]['opportunity'][2015][10]['total_approvals']['doc_count']}}</td>
-                                            <td>{{analysis[1]['opportunity'][2016][10]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>{{lcs[selected_lc.toString()]['analytics'][2015][10][1]['opportunity']['total_approvals']['doc_count']}}</td>
+                                            <td>
+                                                {{lcs[selected_lc.toString()]['analytics'][2016][10][1]['opportunity']['total_approvals']['doc_count']}} 
+                                                ({{calc_growth(
+                                                    lcs[selected_lc.toString()]['analytics'][2015][10][1]['opportunity']['total_approvals']['doc_count'],
+                                                    lcs[selected_lc.toString()]['analytics'][2016][10][1]['opportunity']['total_approvals']['doc_count']
+                                                    ) | number:2}}%)
+                                            </td>
                                             <td>350</td>
                                         </tr>
                                         <tr>
                                             <td><small>Nov</small></td>
-                                            <td>{{analysis[1]['opportunity'][2015][11]['total_approvals']['doc_count']}}</td>
-                                            <td>{{analysis[1]['opportunity'][2016][11]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>{{lcs[selected_lc.toString()]['analytics'][2015][11][1]['opportunity']['total_approvals']['doc_count']}}</td>
+                                            <td>
+                                                {{lcs[selected_lc.toString()]['analytics'][2016][11][1]['opportunity']['total_approvals']['doc_count']}} 
+                                                ({{calc_growth(
+                                                    lcs[selected_lc.toString()]['analytics'][2015][11][1]['opportunity']['total_approvals']['doc_count'],
+                                                    lcs[selected_lc.toString()]['analytics'][2016][11][1]['opportunity']['total_approvals']['doc_count']
+                                                    ) | number:2}}%)
+                                            </td>
                                             <td>350</td>
                                         </tr>
                                         <tr>
                                             <td><small>Dec</small></td>
-                                            <td>{{analysis[1]['opportunity'][2015][12]['total_approvals']['doc_count']}}</td>
-                                            <td>{{analysis[1]['opportunity'][2016][12]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>{{lcs[selected_lc.toString()]['analytics'][2015][12][1]['opportunity']['total_approvals']['doc_count']}}</td>
+                                            <td>
+                                                {{lcs[selected_lc.toString()]['analytics'][2016][12][1]['opportunity']['total_approvals']['doc_count']}} 
+                                                ({{calc_growth(
+                                                    lcs[selected_lc.toString()]['analytics'][2015][12][1]['opportunity']['total_approvals']['doc_count'],
+                                                    lcs[selected_lc.toString()]['analytics'][2016][12][1]['opportunity']['total_approvals']['doc_count']
+                                                    ) | number:2}}%)
+                                            </td>
                                             <td>350</td>
                                         </tr>
                                     </tbody>
@@ -350,74 +495,146 @@
                                     <tbody>
                                         <tr>
                                             <td><small>Jan</small></td>
-                                            <td>{{analysis[2]['person'][2015][1]['total_approvals']['doc_count']}}</td>
-                                            <td>{{analysis[2]['person'][2016][1]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>{{lcs[selected_lc.toString()]['analytics'][2015][1][2]['person']['total_approvals']['doc_count']}}</td>
+                                            <td>
+                                                {{lcs[selected_lc.toString()]['analytics'][2016][1][2]['person']['total_approvals']['doc_count']}} 
+                                                ({{calc_growth(
+                                                    lcs[selected_lc.toString()]['analytics'][2015][1][2]['person']['total_approvals']['doc_count'],
+                                                    lcs[selected_lc.toString()]['analytics'][2016][1][2]['person']['total_approvals']['doc_count']
+                                                    ) | number:2}}%)
+                                            </td>
                                             <td>350</td>
                                         </tr>
                                         <tr>
                                             <td><small>Feb</small></td>
-                                            <td>{{analysis[2]['person'][2015][2]['total_approvals']['doc_count']}}</td>
-                                            <td>{{analysis[2]['person'][2016][2]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>{{lcs[selected_lc.toString()]['analytics'][2015][2][2]['person']['total_approvals']['doc_count']}}</td>
+                                            <td>
+                                                {{lcs[selected_lc.toString()]['analytics'][2016][2][2]['person']['total_approvals']['doc_count']}} 
+                                                ({{calc_growth(
+                                                    lcs[selected_lc.toString()]['analytics'][2015][2][2]['person']['total_approvals']['doc_count'],
+                                                    lcs[selected_lc.toString()]['analytics'][2016][2][2]['person']['total_approvals']['doc_count']
+                                                    ) | number:2}}%)
+                                            </td>
                                             <td>350</td>
                                         </tr>
                                         <tr>
                                             <td><small>Mar</small></td>
-                                            <td>{{analysis[2]['person'][2015][3]['total_approvals']['doc_count']}}</td>
-                                            <td>{{analysis[2]['person'][2016][3]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>{{lcs[selected_lc.toString()]['analytics'][2015][3][2]['person']['total_approvals']['doc_count']}}</td>
+                                            <td>
+                                                {{lcs[selected_lc.toString()]['analytics'][2016][3][2]['person']['total_approvals']['doc_count']}} 
+                                                ({{calc_growth(
+                                                    lcs[selected_lc.toString()]['analytics'][2015][3][2]['person']['total_approvals']['doc_count'],
+                                                    lcs[selected_lc.toString()]['analytics'][2016][3][2]['person']['total_approvals']['doc_count']
+                                                    ) | number:2}}%)
+                                            </td>
                                             <td>350</td>
                                         </tr>
                                         <tr>
                                             <td><small>Apr</small></td>
-                                            <td>{{analysis[2]['person'][2015][4]['total_approvals']['doc_count']}}</td>
-                                            <td>{{analysis[2]['person'][2016][4]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>{{lcs[selected_lc.toString()]['analytics'][2015][4][2]['person']['total_approvals']['doc_count']}}</td>
+                                            <td>
+                                                {{lcs[selected_lc.toString()]['analytics'][2016][4][2]['person']['total_approvals']['doc_count']}} 
+                                                ({{calc_growth(
+                                                    lcs[selected_lc.toString()]['analytics'][2015][4][2]['person']['total_approvals']['doc_count'],
+                                                    lcs[selected_lc.toString()]['analytics'][2016][4][2]['person']['total_approvals']['doc_count']
+                                                    ) | number:2}}%)
+                                            </td>
                                             <td>350</td>
                                         </tr>
                                         <tr>
                                             <td><small>May</small></td>
-                                            <td>{{analysis[2]['person'][2015][5]['total_approvals']['doc_count']}}</td>
-                                            <td>{{analysis[2]['person'][2016][5]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>{{lcs[selected_lc.toString()]['analytics'][2015][5][2]['person']['total_approvals']['doc_count']}}</td>
+                                            <td>
+                                                {{lcs[selected_lc.toString()]['analytics'][2016][5][2]['person']['total_approvals']['doc_count']}} 
+                                                ({{calc_growth(
+                                                    lcs[selected_lc.toString()]['analytics'][2015][5][2]['person']['total_approvals']['doc_count'],
+                                                    lcs[selected_lc.toString()]['analytics'][2016][5][2]['person']['total_approvals']['doc_count']
+                                                    ) | number:2}}%)
+                                            </td>
                                             <td>350</td>
                                         </tr>
                                         <tr>
                                             <td><small>Jun</small></td>
-                                            <td>{{analysis[2]['person'][2015][5]['total_approvals']['doc_count']}}</td>
-                                            <td>{{analysis[2]['person'][2016][5]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>{{lcs[selected_lc.toString()]['analytics'][2015][6][2]['person']['total_approvals']['doc_count']}}</td>
+                                            <td>
+                                                {{lcs[selected_lc.toString()]['analytics'][2016][6][2]['person']['total_approvals']['doc_count']}} 
+                                                ({{calc_growth(
+                                                    lcs[selected_lc.toString()]['analytics'][2015][6][2]['person']['total_approvals']['doc_count'],
+                                                    lcs[selected_lc.toString()]['analytics'][2016][6][2]['person']['total_approvals']['doc_count']
+                                                    ) | number:2}}%)
+                                            </td>
                                             <td>350</td>
                                         </tr>
                                         <tr>
                                             <td><small>Jul</small></td>
-                                            <td>{{analysis[2]['person'][2015][6]['total_approvals']['doc_count']}}</td>
-                                            <td>{{analysis[2]['person'][2016][6]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>{{lcs[selected_lc.toString()]['analytics'][2015][7][2]['person']['total_approvals']['doc_count']}}</td>
+                                            <td>
+                                                {{lcs[selected_lc.toString()]['analytics'][2016][7][2]['person']['total_approvals']['doc_count']}} 
+                                                ({{calc_growth(
+                                                    lcs[selected_lc.toString()]['analytics'][2015][7][2]['person']['total_approvals']['doc_count'],
+                                                    lcs[selected_lc.toString()]['analytics'][2016][7][2]['person']['total_approvals']['doc_count']
+                                                    ) | number:2}}%)
+                                            </td>
                                             <td>350</td>
                                         </tr>
                                         <tr>
                                             <td><small>Ago</small></td>
-                                            <td>{{analysis[2]['person'][2015][7]['total_approvals']['doc_count']}}</td>
-                                            <td>{{analysis[2]['person'][2016][7]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>{{lcs[selected_lc.toString()]['analytics'][2015][8][2]['person']['total_approvals']['doc_count']}}</td>
+                                            <td>
+                                                {{lcs[selected_lc.toString()]['analytics'][2016][8][2]['person']['total_approvals']['doc_count']}} 
+                                                ({{calc_growth(
+                                                    lcs[selected_lc.toString()]['analytics'][2015][8][2]['person']['total_approvals']['doc_count'],
+                                                    lcs[selected_lc.toString()]['analytics'][2016][8][2]['person']['total_approvals']['doc_count']
+                                                    ) | number:2}}%)
+                                            </td>
                                             <td>350</td>
                                         </tr>
                                         <tr>
                                             <td><small>Set</small></td>
-                                            <td>{{analysis[2]['person'][2015][8]['total_approvals']['doc_count']}}</td>
-                                            <td>{{analysis[2]['person'][2016][8]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>{{lcs[selected_lc.toString()]['analytics'][2015][9][2]['person']['total_approvals']['doc_count']}}</td>
+                                            <td>
+                                                {{lcs[selected_lc.toString()]['analytics'][2016][9][2]['person']['total_approvals']['doc_count']}} 
+                                                ({{calc_growth(
+                                                    lcs[selected_lc.toString()]['analytics'][2015][9][2]['person']['total_approvals']['doc_count'],
+                                                    lcs[selected_lc.toString()]['analytics'][2016][9][2]['person']['total_approvals']['doc_count']
+                                                    ) | number:2}}%)
+                                            </td>
                                             <td>350</td>
                                         </tr>
                                         <tr>
                                             <td><small>Oct</small></td>
-                                            <td>{{analysis[2]['person'][2015][10]['total_approvals']['doc_count']}}</td>
-                                            <td>{{analysis[2]['person'][2016][10]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>{{lcs[selected_lc.toString()]['analytics'][2015][10][2]['person']['total_approvals']['doc_count']}}</td>
+                                            <td>
+                                                {{lcs[selected_lc.toString()]['analytics'][2016][10][2]['person']['total_approvals']['doc_count']}} 
+                                                ({{calc_growth(
+                                                    lcs[selected_lc.toString()]['analytics'][2015][10][2]['person']['total_approvals']['doc_count'],
+                                                    lcs[selected_lc.toString()]['analytics'][2016][10][2]['person']['total_approvals']['doc_count']
+                                                    ) | number:2}}%)
+                                            </td>
                                             <td>350</td>
                                         </tr>
                                         <tr>
                                             <td><small>Nov</small></td>
-                                            <td>{{analysis[2]['person'][2015][11]['total_approvals']['doc_count']}}</td>
-                                            <td>{{analysis[2]['person'][2016][11]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>{{lcs[selected_lc.toString()]['analytics'][2015][11][2]['person']['total_approvals']['doc_count']}}</td>
+                                            <td>
+                                                {{lcs[selected_lc.toString()]['analytics'][2016][11][2]['person']['total_approvals']['doc_count']}} 
+                                                ({{calc_growth(
+                                                    lcs[selected_lc.toString()]['analytics'][2015][11][2]['person']['total_approvals']['doc_count'],
+                                                    lcs[selected_lc.toString()]['analytics'][2016][11][2]['person']['total_approvals']['doc_count']
+                                                    ) | number:2}}%)
+                                            </td>
                                             <td>350</td>
                                         </tr>
                                         <tr>
                                             <td><small>Dec</small></td>
-                                            <td>{{analysis[2]['person'][2015][12]['total_approvals']['doc_count']}}</td>
-                                            <td>{{analysis[2]['person'][2016][12]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>{{lcs[selected_lc.toString()]['analytics'][2015][12][2]['person']['total_approvals']['doc_count']}}</td>
+                                            <td>
+                                                {{lcs[selected_lc.toString()]['analytics'][2016][12][2]['person']['total_approvals']['doc_count']}} 
+                                                ({{calc_growth(
+                                                    lcs[selected_lc.toString()]['analytics'][2015][12][2]['person']['total_approvals']['doc_count'],
+                                                    lcs[selected_lc.toString()]['analytics'][2016][12][2]['person']['total_approvals']['doc_count']
+                                                    ) | number:2}}%)
+                                            </td>
                                             <td>350</td>
                                         </tr>
                                     </tbody>
@@ -444,74 +661,146 @@
                                     <tbody>
                                         <tr>
                                             <td><small>Jan</small></td>
-                                            <td>{{analysis[2]['opportunity'][2015][1]['total_approvals']['doc_count']}}</td>
-                                            <td>{{analysis[2]['opportunity'][2016][1]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>{{lcs[selected_lc.toString()]['analytics'][2015][1][2]['opportunity']['total_approvals']['doc_count']}}</td>
+                                            <td>
+                                                {{lcs[selected_lc.toString()]['analytics'][2016][1][2]['opportunity']['total_approvals']['doc_count']}} 
+                                                ({{calc_growth(
+                                                    lcs[selected_lc.toString()]['analytics'][2015][1][2]['opportunity']['total_approvals']['doc_count'],
+                                                    lcs[selected_lc.toString()]['analytics'][2016][1][2]['opportunity']['total_approvals']['doc_count']
+                                                    ) | number:2}}%)
+                                            </td>
                                             <td>350</td>
                                         </tr>
                                         <tr>
                                             <td><small>Feb</small></td>
-                                            <td>{{analysis[2]['opportunity'][2015][2]['total_approvals']['doc_count']}}</td>
-                                            <td>{{analysis[2]['opportunity'][2016][2]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>{{lcs[selected_lc.toString()]['analytics'][2015][2][2]['opportunity']['total_approvals']['doc_count']}}</td>
+                                            <td>
+                                                {{lcs[selected_lc.toString()]['analytics'][2016][2][2]['opportunity']['total_approvals']['doc_count']}} 
+                                                ({{calc_growth(
+                                                    lcs[selected_lc.toString()]['analytics'][2015][2][2]['opportunity']['total_approvals']['doc_count'],
+                                                    lcs[selected_lc.toString()]['analytics'][2016][2][2]['opportunity']['total_approvals']['doc_count']
+                                                    ) | number:2}}%)
+                                            </td>
                                             <td>350</td>
                                         </tr>
                                         <tr>
                                             <td><small>Mar</small></td>
-                                            <td>{{analysis[2]['opportunity'][2015][3]['total_approvals']['doc_count']}}</td>
-                                            <td>{{analysis[2]['opportunity'][2016][3]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>{{lcs[selected_lc.toString()]['analytics'][2015][3][2]['opportunity']['total_approvals']['doc_count']}}</td>
+                                            <td>
+                                                {{lcs[selected_lc.toString()]['analytics'][2016][3][2]['opportunity']['total_approvals']['doc_count']}} 
+                                                ({{calc_growth(
+                                                    lcs[selected_lc.toString()]['analytics'][2015][3][2]['opportunity']['total_approvals']['doc_count'],
+                                                    lcs[selected_lc.toString()]['analytics'][2016][3][2]['opportunity']['total_approvals']['doc_count']
+                                                    ) | number:2}}%)
+                                            </td>
                                             <td>350</td>
                                         </tr>
                                         <tr>
                                             <td><small>Apr</small></td>
-                                            <td>{{analysis[2]['opportunity'][2015][4]['total_approvals']['doc_count']}}</td>
-                                            <td>{{analysis[2]['opportunity'][2016][4]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>{{lcs[selected_lc.toString()]['analytics'][2015][4][2]['opportunity']['total_approvals']['doc_count']}}</td>
+                                            <td>
+                                                {{lcs[selected_lc.toString()]['analytics'][2016][4][2]['opportunity']['total_approvals']['doc_count']}} 
+                                                ({{calc_growth(
+                                                    lcs[selected_lc.toString()]['analytics'][2015][4][2]['opportunity']['total_approvals']['doc_count'],
+                                                    lcs[selected_lc.toString()]['analytics'][2016][4][2]['opportunity']['total_approvals']['doc_count']
+                                                    ) | number:2}}%)
+                                            </td>
                                             <td>350</td>
                                         </tr>
                                         <tr>
                                             <td><small>May</small></td>
-                                            <td>{{analysis[2]['opportunity'][2015][5]['total_approvals']['doc_count']}}</td>
-                                            <td>{{analysis[2]['opportunity'][2016][5]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>{{lcs[selected_lc.toString()]['analytics'][2015][5][2]['opportunity']['total_approvals']['doc_count']}}</td>
+                                            <td>
+                                                {{lcs[selected_lc.toString()]['analytics'][2016][5][2]['opportunity']['total_approvals']['doc_count']}} 
+                                                ({{calc_growth(
+                                                    lcs[selected_lc.toString()]['analytics'][2015][5][2]['opportunity']['total_approvals']['doc_count'],
+                                                    lcs[selected_lc.toString()]['analytics'][2016][5][2]['opportunity']['total_approvals']['doc_count']
+                                                    ) | number:2}}%)
+                                            </td>
                                             <td>350</td>
                                         </tr>
                                         <tr>
                                             <td><small>Jun</small></td>
-                                            <td>{{analysis[2]['opportunity'][2015][6]['total_approvals']['doc_count']}}</td>
-                                            <td>{{analysis[2]['opportunity'][2016][6]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>{{lcs[selected_lc.toString()]['analytics'][2015][6][2]['opportunity']['total_approvals']['doc_count']}}</td>
+                                            <td>
+                                                {{lcs[selected_lc.toString()]['analytics'][2016][6][2]['opportunity']['total_approvals']['doc_count']}} 
+                                                ({{calc_growth(
+                                                    lcs[selected_lc.toString()]['analytics'][2015][6][2]['opportunity']['total_approvals']['doc_count'],
+                                                    lcs[selected_lc.toString()]['analytics'][2016][6][2]['opportunity']['total_approvals']['doc_count']
+                                                    ) | number:2}}%)
+                                            </td>
                                             <td>350</td>
                                         </tr>
                                         <tr>
                                             <td><small>Jul</small></td>
-                                            <td>{{analysis[2]['opportunity'][2015][7]['total_approvals']['doc_count']}}</td>
-                                            <td>{{analysis[2]['opportunity'][2016][7]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>{{lcs[selected_lc.toString()]['analytics'][2015][7][2]['opportunity']['total_approvals']['doc_count']}}</td>
+                                            <td>
+                                                {{lcs[selected_lc.toString()]['analytics'][2016][7][2]['opportunity']['total_approvals']['doc_count']}} 
+                                                ({{calc_growth(
+                                                    lcs[selected_lc.toString()]['analytics'][2015][7][2]['opportunity']['total_approvals']['doc_count'],
+                                                    lcs[selected_lc.toString()]['analytics'][2016][7][2]['opportunity']['total_approvals']['doc_count']
+                                                    ) | number:2}}%)
+                                            </td>
                                             <td>350</td>
                                         </tr>
                                         <tr>
                                             <td><small>Ago</small></td>
-                                            <td>{{analysis[2]['opportunity'][2015][8]['total_approvals']['doc_count']}}</td>
-                                            <td>{{analysis[2]['opportunity'][2016][8]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>{{lcs[selected_lc.toString()]['analytics'][2015][8][2]['opportunity']['total_approvals']['doc_count']}}</td>
+                                            <td>
+                                                {{lcs[selected_lc.toString()]['analytics'][2016][8][2]['opportunity']['total_approvals']['doc_count']}} 
+                                                ({{calc_growth(
+                                                    lcs[selected_lc.toString()]['analytics'][2015][8][2]['opportunity']['total_approvals']['doc_count'],
+                                                    lcs[selected_lc.toString()]['analytics'][2016][8][2]['opportunity']['total_approvals']['doc_count']
+                                                    ) | number:2}}%)
+                                            </td>
                                             <td>350</td>
                                         </tr>
                                         <tr>
                                             <td><small>Set</small></td>
-                                            <td>{{analysis[2]['opportunity'][2015][9]['total_approvals']['doc_count']}}</td>
-                                            <td>{{analysis[2]['opportunity'][2016][9]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>{{lcs[selected_lc.toString()]['analytics'][2015][9][2]['opportunity']['total_approvals']['doc_count']}}</td>
+                                            <td>
+                                                {{lcs[selected_lc.toString()]['analytics'][2016][9][2]['opportunity']['total_approvals']['doc_count']}} 
+                                                ({{calc_growth(
+                                                    lcs[selected_lc.toString()]['analytics'][2015][9][2]['opportunity']['total_approvals']['doc_count'],
+                                                    lcs[selected_lc.toString()]['analytics'][2016][9][2]['opportunity']['total_approvals']['doc_count']
+                                                    ) | number:2}}%)
+                                            </td>
                                             <td>350</td>
                                         </tr>
                                         <tr>
                                             <td><small>Oct</small></td>
-                                            <td>{{analysis[2]['opportunity'][2015][10]['total_approvals']['doc_count']}}</td>
-                                            <td>{{analysis[2]['opportunity'][2016][10]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>{{lcs[selected_lc.toString()]['analytics'][2015][10][2]['opportunity']['total_approvals']['doc_count']}}</td>
+                                            <td>
+                                                {{lcs[selected_lc.toString()]['analytics'][2016][10][2]['opportunity']['total_approvals']['doc_count']}} 
+                                                ({{calc_growth(
+                                                    lcs[selected_lc.toString()]['analytics'][2015][10][2]['opportunity']['total_approvals']['doc_count'],
+                                                    lcs[selected_lc.toString()]['analytics'][2016][10][2]['opportunity']['total_approvals']['doc_count']
+                                                    ) | number:2}}%)
+                                            </td>
                                             <td>350</td>
                                         </tr>
                                         <tr>
                                             <td><small>Nov</small></td>
-                                            <td>{{analysis[2]['opportunity'][2015][11]['total_approvals']['doc_count']}}</td>
-                                            <td>{{analysis[2]['opportunity'][2016][11]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>{{lcs[selected_lc.toString()]['analytics'][2015][11][2]['opportunity']['total_approvals']['doc_count']}}</td>
+                                            <td>
+                                                {{lcs[selected_lc.toString()]['analytics'][2016][11][2]['opportunity']['total_approvals']['doc_count']}} 
+                                                ({{calc_growth(
+                                                    lcs[selected_lc.toString()]['analytics'][2015][11][2]['opportunity']['total_approvals']['doc_count'],
+                                                    lcs[selected_lc.toString()]['analytics'][2016][11][2]['opportunity']['total_approvals']['doc_count']
+                                                    ) | number:2}}%)
+                                            </td>
                                             <td>350</td>
                                         </tr>
                                         <tr>
                                             <td><small>Dec</small></td>
-                                            <td>{{analysis[2]['opportunity'][2015][12]['total_approvals']['doc_count']}}</td>
-                                            <td>{{analysis[2]['opportunity'][2016][12]['total_approvals']['doc_count']}} <i class="fa fa-level-up"></i></td>
+                                            <td>{{lcs[selected_lc.toString()]['analytics'][2015][12][2]['opportunity']['total_approvals']['doc_count']}}</td>
+                                            <td>
+                                                {{lcs[selected_lc.toString()]['analytics'][2016][12][2]['opportunity']['total_approvals']['doc_count']}} 
+                                                ({{calc_growth(
+                                                    lcs[selected_lc.toString()]['analytics'][2015][12][2]['opportunity']['total_approvals']['doc_count'],
+                                                    lcs[selected_lc.toString()]['analytics'][2016][12][2]['opportunity']['total_approvals']['doc_count']
+                                                    ) | number:2}}%)
+                                            </td>
                                             <td>350</td>
                                         </tr>
                                     </tbody>

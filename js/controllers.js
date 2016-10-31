@@ -6,13 +6,9 @@
 /**
  * MainCtrl - controller
  */
-function MainCtrl($http,$scope) {
-
-    this.userName = 'Example user';
-    this.helloText = 'Welcome in SeedProject';
-    this.descriptionText = 'It is an application skeleton for a typical AngularJS web app. You can use it to quickly bootstrap your angular webapp projects and dev environment for these projects.';
-
+function MainCtrl($http,$scope,$localStorage,$sessionStorage) {
     var token = null;
+    $scope.$storage = $localStorage;
     $scope.lcs = {1606:{
 		"id": 1606,
 		"name": "BRAZIL",
@@ -33,73 +29,160 @@ function MainCtrl($http,$scope) {
 	$scope.actual_period = 'Year';
 	$scope.national_ranking = [];
 
-    $http.get('http://bazicon.aiesec.org.br/simple_token', {}).then(
-        function(response) {
-            token = response.data.token;
+	if ($localStorage.last_update != null) {
+		small_init();
+	} else {
+		big_init();
+	}
 
-            $http.get('https://gis-api.aiesec.org:443/v2/lists/lcs.json', {params:{'access_token':token}}).then(
-                function(response) {
-                	for (i in response.data) {
-                		if (response.data[i]['parent'] != null && response.data[i]['parent']['id'] == 1606 && response.data[i]['name'].indexOf("LC CLOSED") == -1) {
-                			$scope.lcs[response.data[i]['id']] = response.data[i];
-                			$scope.lcs[response.data[i]['id']]['analytics'] = {2015:{1:{1:{'person':null,'opportunity':null},2:{'person':null,'opportunity':null}},2:{1:{'person':null,'opportunity':null},2:{'person':null,'opportunity':null}},3:{1:{'person':null,'opportunity':null},2:{'person':null,'opportunity':null}},4:{1:{'person':null,'opportunity':null},2:{'person':null,'opportunity':null}},5:{1:{'person':null,'opportunity':null},2:{'person':null,'opportunity':null}},6:{1:{'person':null,'opportunity':null},2:{'person':null,'opportunity':null}},7:{1:{'person':null,'opportunity':null},2:{'person':null,'opportunity':null}},8:{1:{'person':null,'opportunity':null},2:{'person':null,'opportunity':null}},9:{1:{'person':null,'opportunity':null},2:{'person':null,'opportunity':null}},10:{1:{'person':null,'opportunity':null},2:{'person':null,'opportunity':null}},11:{1:{'person':null,'opportunity':null},2:{'person':null,'opportunity':null}},12:{1:{'person':null,'opportunity':null},2:{'person':null,'opportunity':null}}},2016:{1:{1:{'person':null,'opportunity':null},2:{'person':null,'opportunity':null}},2:{1:{'person':null,'opportunity':null},2:{'person':null,'opportunity':null}},3:{1:{'person':null,'opportunity':null},2:{'person':null,'opportunity':null}},4:{1:{'person':null,'opportunity':null},2:{'person':null,'opportunity':null}},5:{1:{'person':null,'opportunity':null},2:{'person':null,'opportunity':null}},6:{1:{'person':null,'opportunity':null},2:{'person':null,'opportunity':null}},7:{1:{'person':null,'opportunity':null},2:{'person':null,'opportunity':null}},8:{1:{'person':null,'opportunity':null},2:{'person':null,'opportunity':null}},9:{1:{'person':null,'opportunity':null},2:{'person':null,'opportunity':null}},10:{1:{'person':null,'opportunity':null},2:{'person':null,'opportunity':null}},11:{1:{'person':null,'opportunity':null},2:{'person':null,'opportunity':null}},12:{1:{'person':null,'opportunity':null},2:{'person':null,'opportunity':null}}}};
-                		}
-                	}
+	function small_init() {
+		$scope.analysis = $localStorage.analysis;
+		$scope.lcs = $localStorage.lcs;
+        last_date = $localStorage.last_update;
+		$localStorage.last_update = new Date();
+		var types = ['person','opportunity']
 
-                	$scope.analysis = {};
-		            [1,2].forEach(function(program, index, array) {
-		                $scope.analysis[program] = {};
-		                ['person','opportunity'].forEach(function(type, index, array) {
-		                    $scope.analysis[program][type] = {};
-		                    [2015,2016].forEach(function(year, index, array) {
-		                        $scope.analysis[program][type][year] = {};
-		                        [1,2,3,4,5,6,7,8,9,10,11,12].forEach(function(month, index, array) {
-		                            param = {
-		                                'access_token':token,
-		                                'programmes[]':program,
-		                                'basic[type]':type,
-		                                'basic[home_office_id]':1606,
-		                                'start_date':new Date(year, month-1, 1).toISOString().slice(0,10),
-		                                'end_date':new Date(year, month, 0).toISOString().slice(0,10)
-		                            };
-		                            $http.get('https://gis-api.aiesec.org:443/v2/applications/analyze.json', {params:param}).then(
-		                                function(response) {
-		                                    $scope.analysis[program][type][year][month] = response.data.analytics;
-		                                    if (year == 2016){
-		                                        $scope.total_applications += $scope.analysis[program][type][year][month].total_applications.doc_count;
-		                                        $scope.total_applicants += $scope.analysis[program][type][year][month].total_applications.applicants.value;
-		                                        $scope.total_acceptions += $scope.analysis[program][type][year][month].total_matched.doc_count;
-		                                        $scope.total_accepteds += $scope.analysis[program][type][year][month].total_an_accepted.unique_profiles.value;
-		                                        $scope.total_approveds += $scope.analysis[program][type][year][month].total_approvals.doc_count;
-		                                        $scope.total_realizes += $scope.analysis[program][type][year][month].total_realized.doc_count;
-		                                        response.data.analytics.children.buckets.forEach(function(lc, index, array) {
-		                                        	if ($scope.lcs[lc.key] != null) $scope.lcs[lc.key]['analytics'][year][month][program][type] = lc;
-		                                        });
-		                                    }
-		                                }, 
-		                                function(response) {
-		                                    console.log('Não rolou '+response.data);
-		                            });
+		for(i = 1;i<=2;i++){
+			for(j = 0; j < types.length; j++){
+				for(k = 1;k <= ($localStorage.last_update.getMonth()); k++) {
+                    $scope.total_applications += $scope.analysis[i][types[j]][2016][k].total_applications.doc_count;
+                    $scope.total_applicants += $scope.analysis[i][types[j]][2016][k].total_applications.applicants.value;
+                    $scope.total_acceptions += $scope.analysis[i][types[j]][2016][k].total_matched.doc_count;
+                    $scope.total_accepteds += $scope.analysis[i][types[j]][2016][k].total_an_accepted.unique_profiles.value;
+                    $scope.total_approveds += $scope.analysis[i][types[j]][2016][k].total_approvals.doc_count;
+                    $scope.total_realizes += $scope.analysis[i][types[j]][2016][k].total_realized.doc_count;
+                }
+			}
+		}
+
+	    $http.get('http://bazicon.aiesec.org.br/simple_token', {}).then(
+	        function(response) {
+	            token = response.data.token;
+		        [1,2].forEach(function(program, index, array) {
+		            types.forEach(function(type, index, array) {
+		                [new Date().getFullYear()].forEach(function(year, index, array) { //vai dar problema na virada
+		                	months = []
+		                	actual_month = new Date().getMonth();
+		                	for (i = $localStorage.last_update.getMonth(); i <= actual_month; i++) {months.push(i+1)}
+
+			                months.forEach(function(month, index, array) {
+		                        param = {
+		                            'access_token':token,
+		                            'programmes[]':program,
+		                            'basic[type]':type,
+		                            'basic[home_office_id]':1606,
+		                            'start_date':new Date(year, month-1, 1).toISOString().slice(0,10),
+		                            'end_date':new Date(year, month, 0).toISOString().slice(0,10)
+		                        };
+		                        $http.get('https://gis-api.aiesec.org:443/v2/applications/analyze.json', {params:param}).then(
+		                            function(response) {
+		                                $scope.analysis[program][type][year][month] = response.data.analytics;
+		                                $scope.lcs[1606]['analytics'][year][month][program][type] = response.data.analytics;
+		                                if (year == 2016){
+		                                    $scope.total_applications += $scope.analysis[program][type][year][month].total_applications.doc_count;
+		                                    $scope.total_applicants += $scope.analysis[program][type][year][month].total_applications.applicants.value;
+		                                    $scope.total_acceptions += $scope.analysis[program][type][year][month].total_matched.doc_count;
+		                                    $scope.total_accepteds += $scope.analysis[program][type][year][month].total_an_accepted.unique_profiles.value;
+		                                    $scope.total_approveds += $scope.analysis[program][type][year][month].total_approvals.doc_count;
+		                                    $scope.total_realizes += $scope.analysis[program][type][year][month].total_realized.doc_count;
+		                                }
+		                                response.data.analytics.children.buckets.forEach(function(lc, index, array) {
+		                                	if ($scope.lcs[lc.key] != null && lc.key != 1606) $scope.lcs[lc.key]['analytics'][year][month][program][type] = lc;
+		                                });
+		                                $localStorage.analysis = $scope.analysis;
+		                            }, 
+		                            function(response) {
+		                                console.log('Não rolou '+response.data);
+		                                $localStorage.last_update = last_date;
 		                        });
 		                    });
 		                });
 		            });
-                }, 
-                function(response) {
-                    console.log('Não rolou '+response.data);
-            })
-            
-        }, 
-        function(response) {
-            console.log('Não rolou '+response.data);
-    });
+		        });
+	        }, 
+	        function(response) {
+	            console.log('Não rolou '+response.data);
+	    });
+	}
+
+	function big_init() {
+	    $http.get('http://localhost:8080/simple_token', {}).then(
+	        function(response) {
+	            token = response.data.token;
+
+	            $http.get('https://gis-api.aiesec.org:443/v2/lists/lcs.json', {params:{'access_token':token}}).then(
+	                function(response) {
+	                	for (i in response.data) {
+	                		if (response.data[i]['parent'] != null && response.data[i]['parent']['id'] == 1606 && response.data[i]['name'].indexOf("LC CLOSED") == -1) {
+	                			$scope.lcs[response.data[i]['id']] = response.data[i];
+	                			$scope.lcs[response.data[i]['id']]['analytics'] = {2015:{1:{1:{'person':null,'opportunity':null},2:{'person':null,'opportunity':null}},2:{1:{'person':null,'opportunity':null},2:{'person':null,'opportunity':null}},3:{1:{'person':null,'opportunity':null},2:{'person':null,'opportunity':null}},4:{1:{'person':null,'opportunity':null},2:{'person':null,'opportunity':null}},5:{1:{'person':null,'opportunity':null},2:{'person':null,'opportunity':null}},6:{1:{'person':null,'opportunity':null},2:{'person':null,'opportunity':null}},7:{1:{'person':null,'opportunity':null},2:{'person':null,'opportunity':null}},8:{1:{'person':null,'opportunity':null},2:{'person':null,'opportunity':null}},9:{1:{'person':null,'opportunity':null},2:{'person':null,'opportunity':null}},10:{1:{'person':null,'opportunity':null},2:{'person':null,'opportunity':null}},11:{1:{'person':null,'opportunity':null},2:{'person':null,'opportunity':null}},12:{1:{'person':null,'opportunity':null},2:{'person':null,'opportunity':null}}},2016:{1:{1:{'person':null,'opportunity':null},2:{'person':null,'opportunity':null}},2:{1:{'person':null,'opportunity':null},2:{'person':null,'opportunity':null}},3:{1:{'person':null,'opportunity':null},2:{'person':null,'opportunity':null}},4:{1:{'person':null,'opportunity':null},2:{'person':null,'opportunity':null}},5:{1:{'person':null,'opportunity':null},2:{'person':null,'opportunity':null}},6:{1:{'person':null,'opportunity':null},2:{'person':null,'opportunity':null}},7:{1:{'person':null,'opportunity':null},2:{'person':null,'opportunity':null}},8:{1:{'person':null,'opportunity':null},2:{'person':null,'opportunity':null}},9:{1:{'person':null,'opportunity':null},2:{'person':null,'opportunity':null}},10:{1:{'person':null,'opportunity':null},2:{'person':null,'opportunity':null}},11:{1:{'person':null,'opportunity':null},2:{'person':null,'opportunity':null}},12:{1:{'person':null,'opportunity':null},2:{'person':null,'opportunity':null}}}};
+	                		}
+	                	}
+                        $localStorage.lcs = $scope.lcs;
+                        $localStorage.last_update = new Date();
+
+	                	$scope.analysis = {};
+			            [1,2].forEach(function(program, index, array) {
+			                $scope.analysis[program] = {};
+			                ['person','opportunity'].forEach(function(type, index, array) {
+			                    $scope.analysis[program][type] = {};
+			                    [2015,2016].forEach(function(year, index, array) {
+			                        $scope.analysis[program][type][year] = {};
+			                        [1,2,3,4,5,6,7,8,9,10,11,12].forEach(function(month, index, array) {
+			                            param = {
+			                                'access_token':token,
+			                                'programmes[]':program,
+			                                'basic[type]':type,
+			                                'basic[home_office_id]':1606,
+			                                'start_date':new Date(year, month-1, 1).toISOString().slice(0,10),
+			                                'end_date':new Date(year, month, 0).toISOString().slice(0,10)
+			                            };
+			                            $http.get('https://gis-api.aiesec.org:443/v2/applications/analyze.json', {params:param}).then(
+			                                function(response) {
+			                                    $scope.analysis[program][type][year][month] = response.data.analytics;
+			                                    $scope.lcs[1606]['analytics'][year][month][program][type] = response.data.analytics;
+			                                    if (year == 2016){
+			                                        $scope.total_applications += $scope.analysis[program][type][year][month].total_applications.doc_count;
+			                                        $scope.total_applicants += $scope.analysis[program][type][year][month].total_applications.applicants.value;
+			                                        $scope.total_acceptions += $scope.analysis[program][type][year][month].total_matched.doc_count;
+			                                        $scope.total_accepteds += $scope.analysis[program][type][year][month].total_an_accepted.unique_profiles.value;
+			                                        $scope.total_approveds += $scope.analysis[program][type][year][month].total_approvals.doc_count;
+			                                        $scope.total_realizes += $scope.analysis[program][type][year][month].total_realized.doc_count;
+			                                    }
+		                                        response.data.analytics.children.buckets.forEach(function(lc, index, array) {
+		                                        	if ($scope.lcs[lc.key] != null && lc.key != 1606) $scope.lcs[lc.key]['analytics'][year][month][program][type] = lc;
+		                                        });
+		                                        $localStorage.analysis = $scope.analysis;
+			                                }, 
+			                                function(response) {
+			                                    console.log('Não rolou '+response.data);
+		                                        $localStorage.last_update = null;
+			                            });
+			                        });
+			                    });
+			                });
+			            });
+	                }, 
+	                function(response) {
+	                    console.log('Não rolou '+response.data);
+	            })
+	            
+	        }, 
+	        function(response) {
+	            console.log('Não rolou '+response.data);
+	    });
+	}
+
+	$scope.calc_growth = function(last,actual) {
+		return (actual-last)/last * 100;
+	}
 
     $scope.order_ranking = function(){
     	if($scope.analysis[1]['person'][2016][8] != null &&
 	    		$scope.analysis[1]['opportunity'][2015][5] != null &&
 	    		$scope.analysis[2]['opportunity'][2016][12] != null &&
 	    		$scope.analysis[2]['person'][2016][12] != null) {
-    		console.log('order_ranking');
+    		
 			programs = [1,2];
 			types = ['person','opportunity'];
 			months = [1,2,3,4,5,6,7,8,9,10,11,12];
@@ -190,7 +273,7 @@ function MainCtrl($http,$scope) {
 				});
 			});
 		});
-		order_ranking();
+		$scope.order_ranking();
 	};
 /*
 	$scope.database = {
