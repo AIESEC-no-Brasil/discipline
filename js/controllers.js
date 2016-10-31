@@ -34,6 +34,7 @@ function MainCtrl($http,$scope,$localStorage,$sessionStorage) {
 	} else {
 		big_init();
 	}
+	setInterval(reload, 600000);
 
 	function small_init() {
 		$scope.analysis = $localStorage.analysis;
@@ -173,6 +174,33 @@ function MainCtrl($http,$scope,$localStorage,$sessionStorage) {
 	    });
 	}
 
+	function reload() {
+		d = new Date();
+		approveds_oGV = $scope.lcs[$scope.selected_lc]['analytics'][d.getFullYear()][d.getMonth()+1][1]['person'].total_approvals.doc_count;
+		approveds_iGV = $scope.lcs[$scope.selected_lc]['analytics'][d.getFullYear()][d.getMonth()+1][1]['opportunity'].total_approvals.doc_count;
+		approveds_oGT = $scope.lcs[$scope.selected_lc]['analytics'][d.getFullYear()][d.getMonth()+1][2]['person'].total_approvals.doc_count;
+		approveds_iGT = $scope.lcs[$scope.selected_lc]['analytics'][d.getFullYear()][d.getMonth()+1][2]['opportunity'].total_approvals.doc_count;
+		small_init();
+		$scope.total_applications = 0;
+		$scope.total_applicants = 0;
+		$scope.total_acceptions = 0;
+		$scope.total_accepteds = 0;
+		$scope.total_approveds = 0;
+		$scope.total_realizes = 0;
+		if (approveds_oGV != $scope.lcs[$scope.selected_lc]['analytics'][d.getFullYear()][d.getMonth()+1][1]['person'].total_approvals.doc_count) {
+			toastr.success('oGV have a new approved','Uhuuuuuuulllll!');
+		}
+		if (approveds_iGV != $scope.lcs[$scope.selected_lc]['analytics'][d.getFullYear()][d.getMonth()+1][1]['opportunity'].total_approvals.doc_count) {
+			toastr.info('iGV have a new approved','Maravilhosooooooo!');
+		}
+		if (approveds_oGT != $scope.lcs[$scope.selected_lc]['analytics'][d.getFullYear()][d.getMonth()+1][2]['person'].total_approvals.doc_count) {
+			toastr.warning('oGT/GE have a new approved','Lésbica futurista');
+		}
+		if (approveds_iGT != $scope.lcs[$scope.selected_lc]['analytics'][d.getFullYear()][d.getMonth()+1][2]['opportunity'].total_approvals.doc_count) {
+			toastr.error('iGT/GE have a new approved','Siiiiiiiimmmm! ^^');
+		}
+	}
+
 	$scope.calc_growth = function(last,actual) {
 		return (actual-last)/last * 100;
 	}
@@ -182,7 +210,7 @@ function MainCtrl($http,$scope,$localStorage,$sessionStorage) {
 	    		$scope.analysis[1]['opportunity'][2015][5] != null &&
 	    		$scope.analysis[2]['opportunity'][2016][12] != null &&
 	    		$scope.analysis[2]['person'][2016][12] != null) {
-    		
+    		console.log('order_ranking');
 			programs = [1,2];
 			types = ['person','opportunity'];
 			months = [1,2,3,4,5,6,7,8,9,10,11,12];
@@ -275,169 +303,27 @@ function MainCtrl($http,$scope,$localStorage,$sessionStorage) {
 		});
 		$scope.order_ranking();
 	};
-/*
-	$scope.database = {
-		1606:{
-			'goals': [],
-			'cluster': 
-		},
-		100:{
-			'goals': [],
-			'cluster': 
-		},
-		1731:{
-			'goals': [],
-			'cluster': 
-		},
-		32:{
-			'goals': [],
-			'cluster': 
-		},
-		1248:{
-			'goals': [],
-			'cluster': 
-		},
-		1300:{
-			'goals': [],
-			'cluster': 
-		},
-		1766:{
-			'goals': [],
-			'cluster': 
-		},
-		283:{
-			'goals': [],
-			'cluster': 
-		},
-		1178:{
-			'goals': [],
-			'cluster': 
-		},
-		436:{
-			'goals': [],
-			'cluster': 
-		},
-		988:{
-			'goals': [],
-			'cluster': 
-		},
-		286:{
-			'goals': [],
-			'cluster': 
-		},
-		284:{
-			'goals': [],
-			'cluster': 
-		},
-		943:{
-			'goals': [],
-			'cluster': 
-		},
-		434:{
-			'goals': [],
-			'cluster': 
-		},
-		233:{
-			'goals': [],
-			'cluster': 
-		},
-		1368:{
-			'goals': [],
-			'cluster': 
-		},
-		479:{
-			'goals': [],
-			'cluster': 
-		},
-		1666:{
-			'goals': [],
-			'cluster': 
-		},
-		232:{
-			'goals': [],
-			'cluster': 
-		},
-		2061:{
-			'goals': [],
-			'cluster': 
-		},
-		437:{
-			'goals': [],
-			'cluster': 
-		},
-		231:{
-			'goals': [],
-			'cluster': 
-		},
-		723:{
-			'goals': [],
-			'cluster': 
-		},
-		148:{
-			'goals': [],
-			'cluster': 
-		},
-		854:{
-			'goals': [],
-			'cluster': 
-		},
-		288:{
-			'goals': [],
-			'cluster': 
-		},
-		541:{
-			'goals': [],
-			'cluster': 
-		},
-		467:{
-			'goals': [],
-			'cluster': 
-		},
-		777:{
-			'goals': [],
-			'cluster': 
-		},
-		1121:{
-			'goals': [],
-			'cluster': 
-		},
-		958:{
-			'goals': [],
-			'cluster': 
-		},
-		1816:{
-			'goals': [],
-			'cluster': 
-		},
-		435:{
-			'goals': [],
-			'cluster': 
-		},
-		230:{
-			'goals': [],
-			'cluster': 
-		},
-		2098:{
-			'goals': [],
-			'cluster': 
-		},
-		287:{
-			'goals': [],
-			'cluster': 
-		},
-		1003:{
-			'goals': [],
-			'cluster': 
-		},
-		909:{
-			'goals': [],
-			'cluster': 
-		}
-	}*/
-
 };
 
 
 angular
     .module('inspinia')
-    .controller('MainCtrl', MainCtrl)
+    .controller('MainCtrl', MainCtrl);
+
+
+toastr.options = {
+  "closeButton": true,
+  "debug": false,
+  "progressBar": true,
+  "preventDuplicates": false,
+  "positionClass": "toast-top-right",
+  "onclick": null,
+  "showDuration": "400",
+  "hideDuration": "1000",
+  "timeOut": "7000",
+  "extendedTimeOut": "1000",
+  "showEasing": "swing",
+  "hideEasing": "linear",
+  "showMethod": "fadeIn",
+  "hideMethod": "fadeOut"
+}
