@@ -306,36 +306,38 @@ function MainCtrl($http,$scope,$localStorage,$sessionStorage) {
 };
 
 function SigninCtrl($scope,$http) {
-	$http({
-	  method: 'POST',
-	  url: 'https://auth.aiesec.org/oauth/authorize?redirect_uri=https%3A%2F%2Fexperience.aiesec.org%2Fsign_in&response_type=code&client_id=349321fd15814e9fdd2c5abe062a6fb10a27a95dd226fce287adb6c51d3de3df',
-	  data: {'user[email]=':'luan@corumba.net','user[email]=':'luan0990'}
-	}).then(function successCallback(response) {
-		console.log(response.status);
-		console.log(response.data);
-		console.log(response);
-		console.log(response.cache);
-	}, function errorCallback(response) {
-		console.log(response.status);
-		console.log(response.data);
-		console.log(response);
-		console.log(response.cache);
-	});
-	$http({
-	  method: 'POST',
-	  url: 'https://auth.aiesec.org/users/sign_in',
-	  data: {'user[email]=':'luan@corumba.net','user[email]=':'luan0990'}
-	}).then(function successCallback(response) {
-		console.log(response.status);
-		console.log(response.data);
-		console.log(response);
-		console.log(response.cache);
-	}, function errorCallback(response) {
-		console.log(response.status);
-		console.log(response.data);
-		console.log(response);
-		console.log(response.cache);
-	});
+	$scope.try = function() {
+		$http({
+		  method: 'POST',
+		  url: 'https://auth.aiesec.org/oauth/authorize?redirect_uri=https%3A%2F%2Fexperience.aiesec.org%2Fsign_in&response_type=code&client_id=349321fd15814e9fdd2c5abe062a6fb10a27a95dd226fce287adb6c51d3de3df',
+		  data: {'user[email]=':'luan@corumba.net','user[email]=':'luan0990'}
+		}).then(function successCallback(response) {
+			console.log(response.status);
+			console.log(response.data);
+			console.log(response);
+			console.log(response.cache);
+		}, function errorCallback(response) {
+			console.log(response.status);
+			console.log(response.data);
+			console.log(response);
+			console.log(response.cache);
+		});
+		$http({
+		  method: 'POST',
+		  url: 'https://auth.aiesec.org/users/sign_in',
+		  data: {'user[email]=':'luan@corumba.net','user[email]=':'luan0990'}
+		}).then(function successCallback(response) {
+			console.log(response.status);
+			console.log(response.data);
+			console.log(response);
+			console.log(response.cache);
+		}, function errorCallback(response) {
+			console.log(response.status);
+			console.log(response.data);
+			console.log(response);
+			console.log(response.cache);
+		});
+	}
 }
 
 angular
