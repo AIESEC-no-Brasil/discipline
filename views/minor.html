@@ -1,11 +1,73 @@
-<div class="wrapper wrapper-content animated fadeInRight" ng-controller="SigninCtrl as signin">
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="text-center m-t-lg">
-                <h1>
-                    Simple example of second view
-                </h1>
-                <small ng-click="try()">Configure in config.js as minor state.</small>
+<div class="wrapper wrapper-content animated fadeInRight" ng-controller="ExtractionCtrl as extraction">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>Filters</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <!--<select class="select2_demo_3 form-control select2-hidden-accessible" ng-model="selected_lc">
+                                    <option ng-repeat="(id, lc) in lcs" value="{{id}}">{{lc.name}}</option>
+                                </select>-->
+                                <select class="select2_demo_3 form-control select2-hidden-accessible" ng-model="selected_type">
+                                    <option value="date_approved">Applications Approved</option>
+                                    <option value="date_matched">Applications Accepted</option>
+                                    <option value="created_at">New Applications</option>
+                                    <option value="date_realized">Applications Marked Realize</option>
+                                    <option value="experience_start_date">Starting Realize</option>
+                                    <option value="experience_end_date">Completing Realize</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <select class="select2_demo_3 form-control select2-hidden-accessible" ng-model="selected_month">
+                                    <option value="12">December</option>
+                                    <option value="11">November</option>
+                                    <option value="10">October</option>
+                                    <option value="9">September</option>
+                                    <option value="8">August</option>
+                                    <option value="7">July</option>
+                                    <option value="6">June</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <select class="select2_demo_3 form-control select2-hidden-accessible" ng-model="selected_program">
+                                    <option value="oGV">oGV</option>
+                                    <option value="iGV">iGV</option>
+                                    <option value="oGT">oGT</option>
+                                    <option value="oGE">oGE</option>
+                                    <option value="iGT">iGT</option>
+                                    <option value="iGE">iGE</option>
+                                    <option value="TMP">TMP</option>
+                                    <option value="TLP">TLP</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-4">
+                <button class="btn btn-large btn-info btn-block" ng-click="get_aplications()" ng-disable="loading_applications == true">Get Applications</button>
+                <button class="btn btn-large btn-success btn-block" ng-show="applications_array.length > 0 && loading_applications == false" ng-csv="applications_array" csv-header="get_header()" filename="applications.csv" field-separator=",">Download</button>
+            </div>
+            <div class="col-lg-4" ng-show="loading_applications == true">
+                <div class="sk-spinner sk-spinner-three-bounce">
+                    <div class="sk-bounce1"></div>
+                    <div class="sk-bounce2"></div>
+                    <div class="sk-bounce3"></div>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="text-center m-t-lg">
+                    <h1>
+                        Logging
+                    </h1>
+                    <small>{{logging}}</small>
+                </div>
             </div>
         </div>
     </div>

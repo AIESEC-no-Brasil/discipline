@@ -305,46 +305,157 @@ function MainCtrl($http,$scope,$localStorage,$sessionStorage) {
 	};
 };
 
-function SigninCtrl($scope,$http) {
-	$scope.try = function() {
-		$http({
-		  method: 'POST',
-		  url: 'https://auth.aiesec.org/oauth/authorize?redirect_uri=https%3A%2F%2Fexperience.aiesec.org%2Fsign_in&response_type=code&client_id=349321fd15814e9fdd2c5abe062a6fb10a27a95dd226fce287adb6c51d3de3df',
-		  data: {'user[email]=':'luan@corumba.net','user[email]=':''}
-		}).then(function successCallback(response) {
-			console.log(response.status);
-			console.log(response.data);
+function SigninCtrl($scope,$http,$location,$localStorage,$sessionStorage) {
+	$scope.loading = false;
+	$scope.message = '';
+	$scope.login = function() {
+		$scope.loading = true;
+		console.log($scope.email);
+		console.log($scope.password);
+		if ($scope.email != undefined && $scope.password != undefined) {
+			$http.post('http://bazicon.aiesec.org.br/login_expa',{'email':$scope.email,'password':$scope.password},{}
+				).then(function successCallback(response) {
+					console.log(response.status);
+					console.log(response.data);
+					console.log(response);
+					console.log(response.cache);
+					if (response.data['token'] == null) {
+						$scope.message = 'Email or Password incorrect';
+					} else {
+						$localStorage.token = response.data['token'];
+						$location.path('/index/minor');
+					}
+					$scope.loading = false;
+				}, function errorCallback(response) {
+					console.log(response.status);
+					console.log(response.data);
+					console.log(response);
+					console.log(response.cache);
+					$scope.message = 'Something is incorrect, try again';
+					$scope.loading = false;
+				});
+		} else {
+			$scope.loading = false;
+		}
+	}
+}
+
+function ExtractionCtrl($scope,$http,$localStorage,$sessionStorage) {
+	$scope.logging = 'Nothing to log yet';
+	$scope.selected_type = 'date_approved';
+	$scope.selected_month = '11';
+	$scope.selected_program = 'oGV';
+	$scope.applications = [];
+	$scope.applications_array = [];
+	$scope.loading_applications = false;
+	console.log($localStorage.token);
+    
+    function generateParams(page){
+    	param = {}
+	    param['access_token'] = $localStorage.token;
+	    param['filters['+$scope.selected_type+'][from]'] = new Date(2016, $scope.selected_month-1, 1).toISOString().slice(0,10);
+	    param['filters['+$scope.selected_type+'][to]'] = new Date(2016,  $scope.selected_month, -1).toISOString().slice(0,10);
+	    param['per_page'] = 100;
+	    param['page'] = page;
+
+	    switch($scope.selected_program){
+	    	case 'oGV':
+	    		param['filters[person_committee]'] = 1606;
+	    		param['filters[programmes][]'] = 1;
+	    		param['filters[for]'] = 'people';
+	    		break;
+	    	case 'iGV':
+	    		param['filters[opportunity_committee]'] = 1606;
+	    		param['filters[programmes][]'] = 1;
+	    		param['filters[for]'] = 'opportunities';
+	    		break;
+	    	case 'oGT':
+	    		param['filters[person_committee]'] = 1606;
+	    		param['filters[programmes][]'] = 2;
+	    		param['filters[for]'] = 'people';
+	        	param['filters[is_ge]'] = 'false';
+	    		break;
+	    	case 'iGT':
+	    		param['filters[opportunity_committee]'] = 1606;
+	    		param['filters[programmes][]'] = 2;
+	    		param['filters[for]'] = 'opportunities';
+	        	param['filters[is_ge]'] = 'false';
+	    		break;
+	    	case 'oGE':
+	    		param['filters[person_committee]'] = 1606;
+	    		param['filters[programmes][]'] = 2;
+	    		param['filters[for]'] = 'people';
+	        	param['filters[is_ge]'] = 'true';
+	    		break;
+	    	case 'iGE':
+	    		param['filters[opportunity_committee]'] = 1606;
+	    		param['filters[programmes][]'] = 2;
+	    		param['filters[for]'] = 'opportunities';
+	        	param['filters[is_ge]'] = 'true';
+	    		break;
+
+	    }
+	    return param;
+    }
+
+	$scope.get_aplications = function() {
+		$scope.applications = [];
+		$scope.logging = 'Getting '+$scope.selected_program+' applications!';
+		$scope.loading_applications = true;
+
+		function success(response) {
 			console.log(response);
-			console.log(response.cache);
-		}, function errorCallback(response) {
-			console.log(response.status);
-			console.log(response.data);
-			console.log(response);
-			console.log(response.cache);
+	    	$scope.applications = $scope.applications.concat(response.data.data);
+			$scope.logging += ' -> Got '+response.data.data.length+' applications of '+response.data.paging.total_items+' -> ';
+	    	p = generateParams(response.data.paging.current_page+1);
+	    	if(response.data.paging.current_page <= response.data.paging.total_pages) {
+	    		return $http.get('https://gis-api.aiesec.org:443//v2/applications.json', {params:p}).then(success, error);
+	    	} else {
+	    		console.log('FINISHED');
+	    		$scope.logging += ' -> FINISHED!!!'
+	    	}
+		}
+		function error(response) {
+	        console.log('Não rolou '+response.status);
+	        console.log(param);
+			$scope.logging += 'Got a error on page '+param['page']+'\r\n';
+		}
+		return $http.get('https://gis-api.aiesec.org:443//v2/applications.json', {params:generateParams(1)}).then(success, error).then(function(){
+			$scope.applications_array = [{id:"Application ID",created_at:"Application Date",status:"Status",person_id:"Person ID",person_name:"EP Name",person_email:"Email",person_lc:"LC",opportunity_program:"Programme",opportunity_id:"Opportunity ID",opportunity_title:"Title",opportunity_location:"Location",opportunity_office:"Host LC",opportunity_early_start_date:"Earliest Start Date",opportunity_latest_end_date:"Latest End Date",opportunity_applications_close_date:"Applications Close Date"}]
+			for (i = 0 ;i < $scope.applications.length ; i++){
+				$scope.applications_array.push({
+					id:$scope.applications[i].id,
+					created_at:$scope.applications[i].created_at,
+					status:$scope.applications[i].status,
+					person_id:$scope.applications[i].person.id,
+					person_name:$scope.applications[i].person.full_name,
+					person_email:$scope.applications[i].person.email,
+					person_lc:$scope.applications[i].person.home_lc.name,
+					opportunity_program:$scope.applications[i].opportunity.programmes[0]['short_name'],
+					opportunity_id:$scope.applications[i].opportunity.id,
+					opportunity_title:$scope.applications[i].opportunity.title,
+					opportunity_location:$scope.applications[i].opportunity.location,
+					opportunity_office:$scope.applications[i].opportunity.office.full_name,
+					opportunity_early_start_date:$scope.applications[i].opportunity.earliest_start_date,
+					opportunity_latest_end_date:$scope.applications[i].opportunity.latest_end_date,
+					opportunity_applications_close_date:$scope.applications[i].opportunity.applications_close_date,
+				}) 
+			}
+			$scope.loading_applications = false;
 		});
-		$http({
-		  method: 'POST',
-		  url: 'https://auth.aiesec.org/users/sign_in',
-		  data: {'user[email]=':'luan@corumba.net','user[email]=':''}
-		}).then(function successCallback(response) {
-			console.log(response.status);
-			console.log(response.data);
-			console.log(response);
-			console.log(response.cache);
-		}, function errorCallback(response) {
-			console.log(response.status);
-			console.log(response.data);
-			console.log(response);
-			console.log(response.cache);
-		});
+
+		$scope.get_header() = function() {
+			return ["Application ID","Application Date","Status","Person ID","EP Name","Email","LC","Programme","Opportunity ID",
+	  			"Title","Location","Host LC","Earliest Start Date","Latest End Date","Applications Close Date"]
+		}
 	}
 }
 
 angular
     .module('inspinia')
     .controller('MainCtrl', MainCtrl)
-    .controller('SigninCtrl', SigninCtrl);
-
+    .controller('SigninCtrl', SigninCtrl)
+    .controller('ExtractionCtrl', ExtractionCtrl);
 
 toastr.options = {
   "closeButton": true,

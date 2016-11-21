@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Login</title>
+
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="font-awesome/css/font-awesome.css" rel="stylesheet">
+
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+
+<body class="gray-bg">
+
+    <div class="middle-box text-center loginscreen animated fadeInDown" ng-controller="SigninCtrl as signin">
+        <div>
+            <div>
+
+                <h1 class="logo-name">\o/</h1>
+
+            </div>
+            <h3>Welcome to Discipline</h3>
+            <p>
+                
+            </p>
+            <p>Login in. To see it in action.</p>
+            <form class="m-t" role="form">
+                <div class="alert alert-danger" ng-show="message != ''">
+                    {{message}}
+                </div>
+                <div class="form-group">
+                    <input type="email" class="form-control" placeholder="EXPA Email" required="true" ng-model="email">
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-control" placeholder="EXPA Password" required="true" ng-model="password">
+                </div>
+                <button type="submit" class="btn btn-default btn-outline block full-width m-b disabled" ng-click="login()" ng-show="loading == true">
+                    <div class="sk-spinner sk-spinner-three-bounce">
+                        <div class="sk-bounce1"></div>
+                        <div class="sk-bounce2"></div>
+                        <div class="sk-bounce3"></div>
+                    </div>
+                </button>
+                <button type="submit" class="btn btn-default btn-outline block full-width m-b {{(loading) ? disabled: ''}}" ng-click="login()" ng-show="loading != true">
+                    Login
+                </button>
+
+                <a href="https://auth.aiesec.org/users/password/new" target="_blank"><small>Forgot password?</small></a>
+                <p class="text-muted text-center"><small>Do not have an account?</small></p>
+                <a class="btn btn-sm btn-white btn-block" href="https://auth.aiesec.org/users/sign_in" target="_blank">Create an account</a>
+            </form>
+            <p class="m-t"> <small>Discipline is a tool of AIESEC in Brazil</small> </p>
+        </div>
+    </div>
+
+    <!-- Mainly scripts -->
+    <script src="js/jquery-2.1.1.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+
+    <!-- Main Angular scripts-->
+    <script src="js/angular/angular.min.js"></script>
+    <script src="js/plugins/oclazyload/dist/ocLazyLoad.min.js"></script>
+    <script src="js/ui-router/angular-ui-router.min.js"></script>
+    <script src="js/bootstrap/ui-bootstrap-tpls-1.1.2.min.js"></script>
+
+    <!-- Anglar App Script -->
+    <script src="js/app.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/directives.js"></script>
+    <script src="js/controllers.js"></script>
+</body>
+
+</html>

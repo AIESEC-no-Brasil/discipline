@@ -8,6 +8,8 @@
         'oc.lazyLoad',                  // ocLazyLoad
         'ui.bootstrap',                 // Ui Bootstrap
         'ngStorage',					// ngStorage
+        'ngSanitize',
+        'ngCsv'
     ])
 })();
 
