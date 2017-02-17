@@ -31,6 +31,18 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider) {
             templateUrl: "views/minor.html",
             data: { pageTitle: 'Example view' }
         })
+        .state('index.analysis', {
+            url: "/analysis",
+            templateUrl: "views/analysis.html",
+            data: { pageTitle: 'OD Analytics' },
+            controller: 'AnalysisCtrl'
+        })
+        .state('index.people', {
+            url: "/people",
+            templateUrl: "views/people_list.html",
+            data: { pageTitle: 'People Management' },
+            controller: 'PeopleCtrl'
+        })
         .state('login', {
             url: "/login",
             templateUrl: "views/login.html",
@@ -40,6 +52,12 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider) {
 angular
     .module('inspinia')
     .config(config)
+    .filter('split', function() {
+        return function(input, splitChar, splitIndex) {
+            // do some bounds checking here to ensure it has that index
+            return (input != null) ? input.split(splitChar)[splitIndex] : '';
+        }
+    })
     .run(function($rootScope, $state) {
         $rootScope.$state = $state;
     });

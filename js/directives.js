@@ -150,6 +150,68 @@ function minimalizaSidebar($timeout) {
 
 /**
  *
+ * dataTable
+ */
+function datatable() {
+    return {
+        restrict: 'A',
+        link: function(scope, element, attrs) {
+
+            var options = {
+                dom: '<"html5buttons"B>lTfgitp',
+                buttons: [
+                    { extend: 'copy'},
+                    {extend: 'csv'},
+                    {extend: 'excel', title: 'ODAnalytics'},
+                    {extend: 'pdf', title: 'ODAnalytics'},
+
+                    {extend: 'print',
+                        customize: function (win){
+                            jQuery(win.document.body).addClass('white-bg');
+                            jQuery(win.document.body).css('font-size', '10px');
+
+                            jQuery(win.document.body).find('table')
+                                    .addClass('compact')
+                                    .css('font-size', 'inherit');
+                        }
+                    }
+                ]
+            };
+
+            // Tell the dataTables plugin what columns to use
+            // We can either derive them from the dom, or use setup from the controller           
+            var explicitColumns = [];
+            element.find('th').each(function(index, elem) {
+                explicitColumns.push($(elem).text());
+            });
+            if (explicitColumns.length > 0) {
+                options["aoColumns"] = explicitColumns;
+            } else if (attrs.aoColumns) {
+                options["aoColumns"] = scope.$eval(attrs.aoColumns);
+            }
+
+            // aoColumnDefs is dataTables way of providing fine control over column config
+            if (attrs.aoColumnDefs) {
+                options["aoColumnDefs"] = scope.$eval(attrs.aoColumnDefs);
+            }
+
+            // apply the plugin
+            var dataTable = element.dataTable(options);
+
+            // watch for any changes to our data, rebuild the DataTable
+            scope.$watch(attrs.aaData, function(value) {
+                var val = value || null;
+                if (val) {
+                    dataTable.fnClearTable();
+                    dataTable.fnAddData(scope.$eval(attrs.aaData));
+                }
+            });
+        }
+    }  
+}
+
+/**
+ *
  * Pass all functions into module
  */
 angular
@@ -158,4 +220,5 @@ angular
     .directive('sideNavigation', sideNavigation)
     .directive('iboxTools', iboxTools)
     .directive('minimalizaSidebar', minimalizaSidebar)
-    .directive('iboxToolsFullScreen', iboxToolsFullScreen);
+    .directive('iboxToolsFullScreen', iboxToolsFullScreen)
+    .directive('datatable22', datatable);

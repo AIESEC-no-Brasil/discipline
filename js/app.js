@@ -9,7 +9,9 @@
         'ui.bootstrap',                 // Ui Bootstrap
         'ngStorage',					// ngStorage
         'ngSanitize',
-        'ngCsv'
+        'ngCsv',
+        'datatables',
+        'infinite-scroll',
     ])
 })();
 

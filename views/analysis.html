@@ -1,0 +1,120 @@
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>Filters</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <select class="select2_demo_3 form-control select2-hidden-accessible" ng-model="selected_month_from">
+                                    <option value="">From</option>
+                                    <option value="12">December</option>
+                                    <option value="11">November</option>
+                                    <option value="10">October</option>
+                                    <option value="9">September</option>
+                                    <option value="8">August</option>
+                                    <option value="7">July</option>
+                                    <option value="6">June</option>
+                                    <option value="5">May</option>
+                                    <option value="4">April</option>
+                                    <option value="3">March</option>
+                                    <option value="2">February</option>
+                                    <option value="1">January</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select class="select2_demo_3 form-control select2-hidden-accessible" ng-model="selected_month_to">
+                                    <option value="">To</option>
+                                    <option value="12">December</option>
+                                    <option value="11">November</option>
+                                    <option value="10">October</option>
+                                    <option value="9">September</option>
+                                    <option value="8">August</option>
+                                    <option value="7">July</option>
+                                    <option value="6">June</option>
+                                    <option value="5">May</option>
+                                    <option value="4">April</option>
+                                    <option value="3">March</option>
+                                    <option value="2">February</option>
+                                    <option value="1">January</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <select class="select2_demo_3 form-control select2-hidden-accessible" ng-model="selected_year">
+                                    <option value="2017">2017</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <select class="select2_demo_3 form-control select2-hidden-accessible" ng-model="selected_program">
+                                    <option value="">Operation</option>
+                                    <option value="oGV">oGV</option>
+                                    <option value="iGV">iGV</option>
+                                    <option value="oGE">oGE</option>
+                                    <option value="iGE">iGE</option>
+                                    <option value="oGT">oGT</option>
+                                    <option value="iGT">iGT</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <button class="btn btn-primary col-md-12" ng-click="get_analysis()">Apply</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>National Ranking</h5>
+                    </div>
+                    <div class="ibox-content">
+
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered table-hover dataTables-example" datatable="ng" dt-options="dtOptions" dt-instance="dtInstance" >
+                            <thead>
+                                <tr>
+                                    <th>LC Name</th>
+                                    <th>Cluster</th>
+                                    <th>Plan APD</th>
+                                    <th>Arch APD</th>
+                                    <th>Arch APD (%)</th>
+                                    <th>Growth APD (%)</th>
+                                    <th>Arch RE</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="gradeX" ng-repeat="lc in lcs" style="text-align: center;">
+                                    <td>{{lc.name}}</td>
+                                    <td>{{lc.cluster}}</td>
+                                    <td>{{lc.plan || 0}}</td>
+                                    <td><b>{{lc.total_approvals.doc_count || 0}}</b></td>
+                                    <td style="{{arch_style(lc.arch);}}">{{lc.arch || 0}}%</td>
+                                    <td style="{{growth_style(lc.grow);}}">{{(lc.grow || 0) | number : 2}}%</td>
+                                    <td><b>{{lc.total_realized.doc_count || 0}}</b></td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>LC Name</th>
+                                    <th>Cluster</th>
+                                    <th>Plan APD</th>
+                                    <th>Arch APD</th>
+                                    <th>Arch APD (%)</th>
+                                    <th>Growth APD (%)</th>
+                                    <th>Arch RE</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -310,8 +310,6 @@ function SigninCtrl($scope,$http,$location,$localStorage,$sessionStorage) {
 	$scope.message = '';
 	$scope.login = function() {
 		$scope.loading = true;
-		console.log($scope.email);
-		console.log($scope.password);
 		if ($scope.email != undefined && $scope.password != undefined) {
 			$http.post('http://bazicon.aiesec.org.br/login_expa',{'email':$scope.email,'password':$scope.password},{}
 				).then(function successCallback(response) {
@@ -340,10 +338,11 @@ function SigninCtrl($scope,$http,$location,$localStorage,$sessionStorage) {
 	}
 }
 
-function ExtractionCtrl($scope,$http,$localStorage,$sessionStorage) {
+function ExtractionCtrl($scope,$http,$localStorage,$sessionStorage,$state) {
 	$scope.logging = 'Nothing to log yet';
 	$scope.selected_type = 'date_approved';
-	$scope.selected_month = '11';
+	$scope.selected_month = (new Date().getMonth() + 1) + '';
+	$scope.selected_year = '2017';
 	$scope.selected_program = 'oGV';
 	$scope.applications = [];
 	$scope.applications_array = [];
@@ -351,11 +350,13 @@ function ExtractionCtrl($scope,$http,$localStorage,$sessionStorage) {
 	console.log($localStorage.token);
     
     function generateParams(page){
+    	//$scope.selected_month = parseInt($scope.selected_month);
+    	//$scope.selected_year = parseInt($scope.selected_year);
     	param = {}
 	    param['access_token'] = $localStorage.token;
-	    param['filters['+$scope.selected_type+'][from]'] = new Date(2016, $scope.selected_month-1, 1).toISOString().slice(0,10);
-	    param['filters['+$scope.selected_type+'][to]'] = new Date(2016,  $scope.selected_month, -1).toISOString().slice(0,10);
-	    param['per_page'] = 100;
+	    param['filters['+$scope.selected_type+'][from]'] = new Date($scope.selected_year, $scope.selected_month-1, 1).toISOString().slice(0,10);
+	    param['filters['+$scope.selected_type+'][to]'] = new Date($scope.selected_year,  $scope.selected_month, -1).toISOString().slice(0,10);
+	    //param['per_page'] = 50;
 	    param['page'] = page;
 
 	    switch($scope.selected_program){
@@ -373,25 +374,21 @@ function ExtractionCtrl($scope,$http,$localStorage,$sessionStorage) {
 	    		param['filters[person_committee]'] = 1606;
 	    		param['filters[programmes][]'] = 2;
 	    		param['filters[for]'] = 'people';
-	        	param['filters[is_ge]'] = 'false';
 	    		break;
 	    	case 'iGT':
 	    		param['filters[opportunity_committee]'] = 1606;
 	    		param['filters[programmes][]'] = 2;
 	    		param['filters[for]'] = 'opportunities';
-	        	param['filters[is_ge]'] = 'false';
 	    		break;
 	    	case 'oGE':
 	    		param['filters[person_committee]'] = 1606;
-	    		param['filters[programmes][]'] = 2;
+	    		param['filters[programmes][]'] = 5;
 	    		param['filters[for]'] = 'people';
-	        	param['filters[is_ge]'] = 'true';
 	    		break;
 	    	case 'iGE':
 	    		param['filters[opportunity_committee]'] = 1606;
-	    		param['filters[programmes][]'] = 2;
+	    		param['filters[programmes][]'] = 5;
 	    		param['filters[for]'] = 'opportunities';
-	        	param['filters[is_ge]'] = 'true';
 	    		break;
 
 	    }
@@ -419,6 +416,7 @@ function ExtractionCtrl($scope,$http,$localStorage,$sessionStorage) {
 	        console.log('Não rolou '+response.status);
 	        console.log(param);
 			$scope.logging += 'Got a error on page '+param['page']+'\r\n';
+			$state.go('login');
 		}
 		return $http.get('https://gis-api.aiesec.org:443//v2/applications.json', {params:generateParams(1)}).then(success, error).then(function(){
 			$scope.applications_array = [{id:"Application ID",created_at:"Application Date",status:"Status",person_id:"Person ID",person_name:"EP Name",person_email:"Email",person_lc:"LC",opportunity_program:"Programme",opportunity_id:"Opportunity ID",opportunity_title:"Title",opportunity_location:"Location",opportunity_office:"Host LC",opportunity_early_start_date:"Earliest Start Date",opportunity_latest_end_date:"Latest End Date",opportunity_applications_close_date:"Applications Close Date"}]
@@ -451,11 +449,436 @@ function ExtractionCtrl($scope,$http,$localStorage,$sessionStorage) {
 	}
 }
 
+function AnalysisCtrl($scope,$http,$localStorage,$sessionStorage,$state,ListsService,AnalyticsService,DTOptionsBuilder,CSVService) {
+	$scope.selected_month_from = '';
+	$scope.selected_month_to = '';
+	$scope.selected_year = '2017';
+	$scope.selected_program = '';
+	$scope.selected_lc = '1606';
+	$scope.analysis = [];
+	$scope.loading = false;
+    $scope.lcs = {1606:{
+		"id": 1606,
+		"name": "BRAZIL",
+		"full_name": "AIESEC in BRAZIL",
+		"email": "aiesec.brasil@aiesec.org.br",
+		"url": "https://gis.aiesec.org/v2/committees/1606"
+	}};
+	$scope.dtInstance = {};
+	$scope.result_2016 = {}
+	$scope.planed_2016 = {}
+
+	CSVService.get_achievement(function(data){
+		for (i in data) {
+			if ($scope.result_2016[parseInt(data[i]['ID'])] == undefined) {
+				$scope.result_2016[parseInt(data[i]['ID'])] = {};
+				$scope.lcs[parseInt(data[i]['ID'])]['cluster'] = data[i]['CLUSTER'];
+			}
+			if (data[i]['Type'] == 'People') {
+				$scope.result_2016[parseInt(data[i]['ID'])]['OGX'] = data[i];
+			} else {
+				$scope.result_2016[parseInt(data[i]['ID'])]['ICX'] = data[i];
+			}
+		}
+	});
+
+	CSVService.get_goals(function(data){
+		for (i in data) {
+			if ($scope.planed_2016[parseInt(data[i]['ID'])] == undefined) {
+				$scope.planed_2016[parseInt(data[i]['ID'])] = {};
+			}
+			if (data[i]['Type'] == 'People' && data[i]['Operation'] == 'GV') {
+				$scope.planed_2016[parseInt(data[i]['ID'])]['oGV'] = data[i];
+			} else if (data[i]['Type'] == 'People' && data[i]['Operation'] == 'GE') {
+				$scope.planed_2016[parseInt(data[i]['ID'])]['oGE'] = data[i];
+			} else if (data[i]['Type'] == 'People' && data[i]['Operation'] == 'GT') {
+				$scope.planed_2016[parseInt(data[i]['ID'])]['oGT'] = data[i];
+			} else if (data[i]['Type'] == 'Opportunity' && data[i]['Operation'] == 'GV') {
+				$scope.planed_2016[parseInt(data[i]['ID'])]['iGV'] = data[i];
+			} else if (data[i]['Type'] == 'Opportunity' && data[i]['Operation'] == 'GE') {
+				$scope.planed_2016[parseInt(data[i]['ID'])]['iGE'] = data[i];
+			} else if (data[i]['Type'] == 'Opportunity' && data[i]['Operation'] == 'GT') {
+				$scope.planed_2016[parseInt(data[i]['ID'])]['iGT'] = data[i];
+			}
+		}
+		console.log($scope.planed_2016);
+	});
+
+	function get_apd_by_month(id,month,type) {
+		switch (month) {
+			case 1 : return parseInt($scope.result_2016[id][type]['Jan']);
+			case 2 : return parseInt($scope.result_2016[id][type]['Feb']);
+			case 3 : return parseInt($scope.result_2016[id][type]['Mar']);
+			case 4 : return parseInt($scope.result_2016[id][type]['Apr']);
+			case 5 : return parseInt($scope.result_2016[id][type]['May']);
+			case 6 : return parseInt($scope.result_2016[id][type]['Jun']);
+			case 7 : return parseInt($scope.result_2016[id][type]['Jul']);
+			case 8 : return parseInt($scope.result_2016[id][type]['Ago']);
+			case 9 : return parseInt($scope.result_2016[id][type]['Sep']);
+			case 10 : return parseInt($scope.result_2016[id][type]['Oct']);
+			case 11 : return parseInt($scope.result_2016[id][type]['Nov']);
+			case 12 : return parseInt($scope.result_2016[id][type]['Dec']);
+		}
+	}
+
+	function get_plan_by_month(id,month,operation) {
+		switch (month) {
+			case 1 : return parseInt($scope.planed_2016[id][operation]['Jan']);
+			case 2 : return parseInt($scope.planed_2016[id][operation]['Feb']);
+			case 3 : return parseInt($scope.planed_2016[id][operation]['Mar']);
+			case 4 : return parseInt($scope.planed_2016[id][operation]['Apr']);
+			case 5 : return parseInt($scope.planed_2016[id][operation]['May']);
+			case 6 : return parseInt($scope.planed_2016[id][operation]['Jun']);
+			case 7 : return parseInt($scope.planed_2016[id][operation]['Jul']);
+			case 8 : return parseInt($scope.planed_2016[id][operation]['Ago']);
+			case 9 : return parseInt($scope.planed_2016[id][operation]['Sep']);
+			case 10 : return parseInt($scope.planed_2016[id][operation]['Oct']);
+			case 11 : return parseInt($scope.planed_2016[id][operation]['Nov']);
+			case 12 : return parseInt($scope.planed_2016[id][operation]['Dec']);
+		}
+	}
+
+	function get_planned(id,operation) {
+		planned = 0;
+		for (m = parseInt($scope.selected_month_from); m <= parseInt($scope.selected_month_to); m++) {
+			planned += get_plan_by_month(parseInt(id),m,operation);
+		}
+		return planned;
+	}
+
+    function generateParams(past){
+    	//$scope.selected_month = parseInt($scope.selected_month);
+    	//$scope.selected_year = parseInt($scope.selected_year);
+    	param = {}
+	    param['access_token'] = $localStorage.token;
+	    param['start_date'] = new Date($scope.selected_year-past, $scope.selected_month_from-1, 1).toISOString().slice(0,10);
+	    param['end_date'] = new Date($scope.selected_year-past,  $scope.selected_month_to, -1).toISOString().slice(0,10);
+	    param['basic[home_office_id]'] = '1606';
+
+	    switch($scope.selected_program){
+	    	case 'oGV':
+	    		param['programmes[]'] = 1;
+	    		param['basic[type]'] = 'person';
+	    		break;
+	    	case 'iGV':
+	    		param['programmes[]'] = 1;
+	    		param['basic[type]'] = 'opportunity';
+	    		break;
+	    	case 'oGT':
+	    		param['programmes[]'] = 2;
+	    		param['basic[type]'] = 'person';
+	    		break;
+	    	case 'iGT':
+	    		param['programmes[]'] = 2;
+	    		param['basic[type]'] = 'opportunity';
+	    		break;
+	    	case 'oGE':
+	    		param['programmes[]'] = 5;
+	    		param['basic[type]'] = 'person';
+	    		break;
+	    	case 'iGE':
+	    		param['programmes[]'] = 5;
+	    		param['basic[type]'] = 'opportunity';
+	    		break;
+	    }
+	    return param;
+    }
+
+    if ($localStorage.lcs == null) {
+    	ListsService.get_lcs($localStorage.token).then(
+    		function(response) {
+            	for (i in response.data) {
+            		if (response.data[i]['parent'] != null && response.data[i]['parent']['id'] == 1606 && response.data[i]['name'].indexOf("LC CLOSED") == -1) {
+            			$scope.lcs[response.data[i]['id']] = response.data[i];
+            		}
+            	}
+                $localStorage.lcs = $scope.lcs;
+            },
+            function(response) {
+            	console.log('Não rolou '+response.data);
+            }
+        );
+    } else {
+    	$scope.lcs = $localStorage.lcs;
+    }
+
+  	//TODO pegar resultado de janeiro e fereveiro a partir da planilha
+    $scope.get_analysis = function() {	
+    	AnalyticsService.get_application_analitics(localStorage.token,generateParams(0)).then(
+    		function(success) {
+    			lcs = success.data['analytics']['children']['buckets'];
+            	for (i in lcs) {
+            		if (lcs[i]['key'] in $scope.lcs) {
+        				$scope.lcs[lcs[i]['key']]['total_approvals'] = lcs[i]['total_approvals'];
+        				$scope.lcs[lcs[i]['key']]['total_realized'] = lcs[i]['total_realized'];
+        				$scope.lcs[lcs[i]['key']]['cluster'] = $scope.result_2016[lcs[i]['key']]['OGX']['CLUSTER'];
+        				$scope.lcs[lcs[i]['key']]['plan'] = get_planned(lcs[i]['key'],$scope.selected_program);
+        				$scope.lcs[lcs[i]['key']]['arch'] = (get_planned(lcs[i]['key'],$scope.selected_program) == 0) ? 0 : (100*lcs[i]['total_approvals'].doc_count)/get_planned(lcs[i]['key'],$scope.selected_program);
+            		}
+            	}
+            	$scope.lcs[1606]['total_approvals'] = success.data['analytics']['total_approvals'];
+            	$scope.lcs[1606]['total_realized'] = success.data['analytics']['total_realized'];
+			    $scope.dtInstance.rerender();
+    			console.log($scope.lcs);
+    		},
+    		function(fail) {
+    			console.log('Não rolou '+fail.data);
+    		}
+		).then(function(){
+			if ($scope.selected_program == 'oGV'|| $scope.selected_program == 'iGV') {
+				type = ($scope.selected_program == 'oGV') ? 'OGX' : 'ICX';
+				for (i in $scope.lcs) {
+					last_yead_apds = 0;
+					for (m = parseInt($scope.selected_month_from); m <= parseInt($scope.selected_month_to); m++) {
+						last_yead_apds += get_apd_by_month(parseInt(i),m,type);
+					}
+        			if (last_yead_apds > 0 && $scope.lcs[i]['total_approvals'] != undefined) {
+						$scope.lcs[i]['grow'] = ($scope.lcs[i]['total_approvals'].doc_count - last_yead_apds) / last_yead_apds * 100;
+					} else {
+						$scope.lcs[i]['grow'] = 0;
+					}
+				}
+				console.log($scope.lcs);
+			} else {
+				AnalyticsService.get_application_analitics(localStorage.token,generateParams(1)).then(
+		    		function(success) {
+		    			console.log(success.data);
+		    			lcs = success.data['analytics']['children']['buckets'];
+		            	for (i in lcs) {
+		            		if (lcs[i]['key'] in $scope.lcs) {
+		            			if (lcs[i]['total_approvals'].doc_count > 0) {
+		        					$scope.lcs[lcs[i]['key']]['grow'] = ($scope.lcs[lcs[i]['key']]['total_approvals'].doc_count - lcs[i]['total_approvals'].doc_count) / lcs[i]['total_approvals'].doc_count * 100;
+		        				} else {
+		        					$scope.lcs[lcs[i]['key']]['grow'] = 0;
+		        				}
+		            		}
+		            	}
+					    $scope.dtInstance.rerender();
+		    		},
+		    		function(fail) {
+		    			console.log('Não rolou '+fail.data);
+		    		}
+				);
+			}
+		});
+    }
+
+    $scope.growth_style = function(grow) {
+    	if (grow < 0) {
+    		return 'color: red;';
+    	} else if (grow > 30) {
+    		return 'color: blue;'
+    	}
+    }
+
+    $scope.arch_style = function(arch) {
+    	if (arch < 70) {
+    		return 'color: red;';
+    	} else if (arch > 80) {
+    		return 'color: gree;';
+    	} else if (arch > 100) {
+    		return 'color: blue;';
+    	}
+    }
+
+    $scope.dtOptions = DTOptionsBuilder.newOptions()
+      .withDisplayLength(25)
+      .withOption('dom', '<"html5buttons"B>lTfgitp')
+      .withOption('buttons', [
+                    { extend: 'copy'},
+                    {extend: 'csv'},
+                    {extend: 'excel', title: 'ODAnalytics'},
+                    {extend: 'pdf', title: 'ODAnalytics'},
+
+                    {extend: 'print',
+                        customize: function (win){
+                            jQuery(win.document.body).addClass('white-bg');
+                            jQuery(win.document.body).css('font-size', '10px');
+
+                            jQuery(win.document.body).find('table')
+                                    .addClass('compact')
+                                    .css('font-size', 'inherit');
+                        }
+                    }
+                ]);
+
+    $scope.columnDefs = [ 
+        { "mDataProp": "name", "aTargets":[0]},
+        { "mDataProp": "cluster", "aTargets":[1] },
+        { "mDataProp": "plan", "aTargets":[2] },
+        { "mDataProp": "total_approvals", "aTargets":[3] },
+        { "mDataProp": "arch", "aTargets":[4] },
+        { "mDataProp": "grow", "aTargets":[5] },
+        { "mDataProp": "total_realized", "aTargets":[6] }
+    ]; 
+}
+
+function PeopleCtrl($scope,$http,$localStorage,$uibModal,$timeout,ListsService) {
+
+	$scope.error_msg = false;
+    $scope.busy_scroll = false;
+
+    $scope.loading_list = false;
+    $scope.loading_detail = false;
+
+    $scope.commettees = [];
+    $scope.selected_lc = null;
+
+    $scope.status_filter = 'all';
+    $scope.ops_filter = false;
+    $scope.epi_filter = false;
+
+
+    if ($localStorage.lcs == null) {
+    	ListsService.get_lcs($localStorage.token).then(
+    		function(response) {
+            	for (i in response.data) {
+            		if (response.data[i]['parent'] != null && response.data[i]['parent']['id'] == 1606 && response.data[i]['name'].indexOf("LC CLOSED") == -1) {
+            			$scope.lcs[response.data[i]['id']] = response.data[i];
+            		}
+            	}
+                $localStorage.lcs = $scope.lcs;
+            },
+            function(response) {
+            	console.log('Não rolou '+response.data);
+            }
+        );
+    } else {
+    	$scope.lcs = $localStorage.lcs;
+    }
+
+    $scope.list = function() {
+    	$scope.people = [];
+    	$scope.loading_list = true;
+	    params = {
+	    	status: $scope.status_filter.toLowerCase(),
+	    	ops: $scope.ops_filter,
+	    	epi: $scope.epi_filter,
+	    	lc: $scope.selected_lc.id,
+	    	page: 0
+	    };
+	    $http.get('/disrupt/ogx/list', {params: params}).then(
+	    	function successCallback(response) {
+	    		$scope.people = response.data;
+		    	$scope.loading_list = false;
+    			$scope.busy_scroll = (response.data.length < 30) ? true : false;
+	    		$scope.person = $scope.people[0];
+	    	}, function errorCallback(response) {
+	    		$scope.error_msg = true;
+		    	$scope.loading_list = false;
+	    	});
+    };
+
+    $scope.list_more = function() {
+    	$scope.busy_scroll = true;
+    	$scope.loading_list = true;
+	    params = {
+	    	status: $scope.status_filter.toLowerCase(),
+	    	ops: $scope.ops_filter,
+	    	epi: $scope.epi_filter,
+	    	lc: $scope.selected_lc.id,
+	    	page: Math.floor($scope.people.length / 30)
+	    };
+	    $http.get('/disrupt/ogx/list', {params: params}).then(
+	    	function successCallback(response) {
+    			$scope.people = $scope.people.concat(response.data);
+    			$scope.busy_scroll = (response.data.length < 30) ? true : false;
+    			$scope.loading_list = false;
+	    	}, function errorCallback(response) {
+	    		$scope.error_msg = true;
+    			$scope.loading_list = false;
+	    	});
+    }
+
+    $scope.load_analysis = function() {
+	    params = { lc: $scope.selected_lc.id };
+	    $http.get('/disrupt/ogx/kpis', {params: params}).then(
+	    	function successCallback(response) {
+		    	$scope.analysis = {
+		    		total_open : response.data['open'],
+		    		month_open : 'later',
+		    		total_applied : response.data['applied'],
+		    		month_applied : 'later',
+		    		total_accepted : response.data['accepted'],
+		    		month_accepted : 'later',
+		    		total_realized : response.data['realized'],
+		    		month_realized : 'later',
+		    		total_completed : response.data['completed'],
+		    		month_completed : 'later',
+		    		total_returnee : response.data['other'],
+		    		month_returnee : 'later',
+		    	};
+	    	}, function errorCallback(response) {
+	    		$scope.error_msg = true;
+	    	});
+    }
+
+    $scope.select_ep = function(ep) {
+    	$scope.person = null;
+    	$scope.loading_detail = true;
+    	$scope.person = ep;
+	    $scope.loading_detail = false;
+		console.log($scope.person);
+    };
+
+    $scope.open_edit_modal = function () {
+        var modalInstance = $uibModal.open({
+            templateUrl: 'ogx/_edit_modal.html'
+        });
+    };
+
+
+    $scope.status_color = function(ep_status) {
+	    switch(ep_status){
+	    	case 'open':
+	    		return '';
+	    	case 'in_progress':
+	    		return 'primary';
+	    	case 'matched':
+	    		return 'info';
+	    	case 'realized':
+	    		return 'success'
+	    	case 'completed':
+	    		return 'danger'
+	    	default:
+	    		return 'danger';
+	    }
+    };
+
+    $scope.cf_step = function(step) {
+	    switch(step){
+	    	case 'all':
+	    		return 'Todos';
+	    	case 'open':
+	    		return 'Open';
+	    	case 'in_progress':
+	    		return 'Applied';
+	    	case 'matched':
+	    		return 'Accepted';
+	    	case 'realized':
+	    		return 'Realizing';
+	    	case 'completed':
+	    		return 'Completed'
+	    	default:
+	    		return 'danger';
+	    }
+    };
+
+    $scope.no_personal_info = function(person) {
+    	return person != null && person.xp_contact_info == null &&
+    		person.xp_address_info == null && 
+    		person.xp_home_lc_id == null && 
+    		person.product == null;
+    }
+};
+
 angular
     .module('inspinia')
     .controller('MainCtrl', MainCtrl)
+    .controller('AnalysisCtrl', AnalysisCtrl)
     .controller('SigninCtrl', SigninCtrl)
-    .controller('ExtractionCtrl', ExtractionCtrl);
+    .controller('ExtractionCtrl', ExtractionCtrl)
+    .controller('PeopleCtrl', PeopleCtrl);
 
 toastr.options = {
   "closeButton": true,
