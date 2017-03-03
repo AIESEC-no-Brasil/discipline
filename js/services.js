@@ -45,6 +45,23 @@ function OpportunitiesService($filter,$http) {
 	}
 }
 
+function PeopleService($filter,$http) {
+	var url = 'https://gis-api.aiesec.org/v2/people/'
+
+	this.list = function(token,page,filters) {
+		var param = {
+			'access_token':token,
+			'per_page':30,
+			'page':page,
+		};
+		return $http.get(url,{params:param});
+	};
+
+	this.find = function(token,id) {
+		return $http.get(url+id,{params:{'access_token':token}});
+	}
+}
+
 function AuthService($http) {
 	this.simple_token = function () {
 		return $http.get('https://opportunities.aiesec.org/js/1.0.0.op.js', {}).then(
@@ -145,9 +162,6 @@ function AnalyticsService($http) {
 }
 
 function CSVService($http) {
-	//https://docs.google.com/spreadsheets/d/1sYXwfxpb5vbuDCNT3gzucGF5dihEsdqVc7JWxvExWn8/pub?gid=0&single=true&output=csv
-	//https://docs.google.com/spreadsheets/d/1sYXwfxpb5vbuDCNT3gzucGF5dihEsdqVc7JWxvExWn8/pub?gid=2139243991&single=true&output=csv
-
 
 	this.get_achievement = function(callback) {
 		Tabletop.init( { key: 'https://docs.google.com/spreadsheets/d/17tk1EbDDoVxuaOCk80ls7R_K9O6aaoIHmy_E-G9Ip0k/pubhtml?gid=0&single=true',
@@ -155,8 +169,26 @@ function CSVService($http) {
                    simpleSheet: true } );
 	}
 
+	this.get_open_goals = function(callback) {
+		Tabletop.init( { key: 'https://docs.google.com/spreadsheets/d/1GXw_f0NxtZkKTG5UJ0CE3VLpGlSrRhyoFq41BkqHqDk/pubhtml?gid=1770873172&single=true',
+                   callback: callback,
+                   simpleSheet: true } );
+	}
+
 	this.get_goals = function(callback) {
 		Tabletop.init( { key: 'https://docs.google.com/spreadsheets/d/1GXw_f0NxtZkKTG5UJ0CE3VLpGlSrRhyoFq41BkqHqDk/pubhtml?gid=0&single=true',
+                   callback: callback,
+                   simpleSheet: false } );
+	}
+
+	this.get_re_goals = function(callback) {
+		Tabletop.init( { key: 'https://docs.google.com/spreadsheets/d/1GXw_f0NxtZkKTG5UJ0CE3VLpGlSrRhyoFq41BkqHqDk/pubhtml?gid=588048427&single=true',
+                   callback: callback,
+                   simpleSheet: true } );
+	}
+
+	this.get_cp_goals = function(callback) {
+		Tabletop.init( { key: 'https://docs.google.com/spreadsheets/d/1GXw_f0NxtZkKTG5UJ0CE3VLpGlSrRhyoFq41BkqHqDk/pubhtml?gid=1164991409&single=true',
                    callback: callback,
                    simpleSheet: true } );
 	}
@@ -164,6 +196,7 @@ function CSVService($http) {
 
 angular.module('inspinia')
 	.service('OpportunitiesService',OpportunitiesService)
+	.service('PeopleService',PeopleService)
 	.service('ApplicationService',ApplicationService)
 	.service('ProfileService',ProfileService)
 	.service('ListsService',ListsService)

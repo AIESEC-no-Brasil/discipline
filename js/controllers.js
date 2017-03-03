@@ -454,6 +454,7 @@ function AnalysisCtrl($scope,$http,$localStorage,$sessionStorage,$state,ListsSer
 	$scope.selected_month_to = '';
 	$scope.selected_year = '2017';
 	$scope.selected_program = '';
+	$scope.selected_process = 'apd';
 	$scope.selected_lc = '1606';
 	$scope.analysis = [];
 	$scope.loading = false;
@@ -472,76 +473,114 @@ function AnalysisCtrl($scope,$http,$localStorage,$sessionStorage,$state,ListsSer
 		for (i in data) {
 			if ($scope.result_2016[parseInt(data[i]['ID'])] == undefined) {
 				$scope.result_2016[parseInt(data[i]['ID'])] = {};
+				$scope.result_2016[parseInt(data[i]['ID'])]['OGX'] = {};
+				$scope.result_2016[parseInt(data[i]['ID'])]['ICX'] = {};
 				$scope.lcs[parseInt(data[i]['ID'])]['cluster'] = data[i]['CLUSTER'];
 			}
 			if (data[i]['Type'] == 'People') {
-				$scope.result_2016[parseInt(data[i]['ID'])]['OGX'] = data[i];
+				$scope.result_2016[parseInt(data[i]['ID'])]['OGX'][data[i]['KPI']] = data[i];
 			} else {
-				$scope.result_2016[parseInt(data[i]['ID'])]['ICX'] = data[i];
+				$scope.result_2016[parseInt(data[i]['ID'])]['ICX'][data[i]['KPI']] = data[i];
 			}
 		}
 	});
 
 	CSVService.get_goals(function(data){
-		for (i in data) {
-			if ($scope.planed_2016[parseInt(data[i]['ID'])] == undefined) {
-				$scope.planed_2016[parseInt(data[i]['ID'])] = {};
+		console.log(data);
+		opens = data.Open.all();
+		apds = data.APD.all();
+		res = data.RE.all();
+		cps = data.CO.all();
+		for (i in apds) {
+			if ($scope.planed_2016[parseInt(apds[i]['ID'])] == undefined) {
+				$scope.planed_2016[parseInt(apds[i]['ID'])] = {};
+				$scope.planed_2016[parseInt(apds[i]['ID'])]['open'] = {};
+				$scope.planed_2016[parseInt(apds[i]['ID'])]['apd'] = {};
+				$scope.planed_2016[parseInt(apds[i]['ID'])]['re'] = {};
+				$scope.planed_2016[parseInt(apds[i]['ID'])]['cp'] = {};
 			}
-			if (data[i]['Type'] == 'People' && data[i]['Operation'] == 'GV') {
-				$scope.planed_2016[parseInt(data[i]['ID'])]['oGV'] = data[i];
-			} else if (data[i]['Type'] == 'People' && data[i]['Operation'] == 'GE') {
-				$scope.planed_2016[parseInt(data[i]['ID'])]['oGE'] = data[i];
-			} else if (data[i]['Type'] == 'People' && data[i]['Operation'] == 'GT') {
-				$scope.planed_2016[parseInt(data[i]['ID'])]['oGT'] = data[i];
-			} else if (data[i]['Type'] == 'Opportunity' && data[i]['Operation'] == 'GV') {
-				$scope.planed_2016[parseInt(data[i]['ID'])]['iGV'] = data[i];
-			} else if (data[i]['Type'] == 'Opportunity' && data[i]['Operation'] == 'GE') {
-				$scope.planed_2016[parseInt(data[i]['ID'])]['iGE'] = data[i];
-			} else if (data[i]['Type'] == 'Opportunity' && data[i]['Operation'] == 'GT') {
-				$scope.planed_2016[parseInt(data[i]['ID'])]['iGT'] = data[i];
+			if (apds[i]['Type'] == 'People' && apds[i]['Operation'] == 'GV') {
+				$scope.planed_2016[parseInt(apds[i]['ID'])]['open']['oGV'] = opens[i];
+				$scope.planed_2016[parseInt(apds[i]['ID'])]['apd']['oGV'] = apds[i];
+				$scope.planed_2016[parseInt(apds[i]['ID'])]['re']['oGV'] = res[i];
+				$scope.planed_2016[parseInt(apds[i]['ID'])]['cp']['oGV'] = cps[i];
+			} else if (apds[i]['Type'] == 'People' && apds[i]['Operation'] == 'GE') {
+				$scope.planed_2016[parseInt(apds[i]['ID'])]['open']['oGE'] = opens[i];
+				$scope.planed_2016[parseInt(apds[i]['ID'])]['apd']['oGE'] = apds[i];
+				$scope.planed_2016[parseInt(apds[i]['ID'])]['re']['oGE'] = res[i];
+				$scope.planed_2016[parseInt(apds[i]['ID'])]['cp']['oGE'] = cps[i];
+			} else if (apds[i]['Type'] == 'People' && apds[i]['Operation'] == 'GT') {
+				$scope.planed_2016[parseInt(apds[i]['ID'])]['open']['oGT'] = opens[i];
+				$scope.planed_2016[parseInt(apds[i]['ID'])]['apd']['oGT'] = apds[i];
+				$scope.planed_2016[parseInt(apds[i]['ID'])]['re']['oGT'] = res[i];
+				$scope.planed_2016[parseInt(apds[i]['ID'])]['cp']['oGT'] = cps[i];
+			} else if (apds[i]['Type'] == 'Opportunity' && apds[i]['Operation'] == 'GV') {
+				$scope.planed_2016[parseInt(apds[i]['ID'])]['open']['iGV'] = opens[i];
+				$scope.planed_2016[parseInt(apds[i]['ID'])]['apd']['iGV'] = apds[i];
+				$scope.planed_2016[parseInt(apds[i]['ID'])]['re']['iGV'] = res[i];
+				$scope.planed_2016[parseInt(apds[i]['ID'])]['cp']['iGV'] = cps[i];
+			} else if (apds[i]['Type'] == 'Opportunity' && apds[i]['Operation'] == 'GE') {
+				$scope.planed_2016[parseInt(apds[i]['ID'])]['open']['iGE'] = opens[i];
+				$scope.planed_2016[parseInt(apds[i]['ID'])]['apd']['iGE'] = apds[i];
+				$scope.planed_2016[parseInt(apds[i]['ID'])]['re']['iGE'] = res[i];
+				$scope.planed_2016[parseInt(apds[i]['ID'])]['cp']['iGE'] = cps[i];
+			} else if (apds[i]['Type'] == 'Opportunity' && apds[i]['Operation'] == 'GT') {
+				$scope.planed_2016[parseInt(apds[i]['ID'])]['open']['iGT'] = opens[i];
+				$scope.planed_2016[parseInt(apds[i]['ID'])]['apd']['iGT'] = apds[i];
+				$scope.planed_2016[parseInt(apds[i]['ID'])]['re']['iGT'] = res[i];
+				$scope.planed_2016[parseInt(apds[i]['ID'])]['cp']['iGT'] = cps[i];
 			}
 		}
 		console.log($scope.planed_2016);
 	});
 
-	function get_apd_by_month(id,month,type) {
+	function get_apd_by_month(id,month,type,kpi) {
 		switch (month) {
-			case 1 : return parseInt($scope.result_2016[id][type]['Jan']);
-			case 2 : return parseInt($scope.result_2016[id][type]['Feb']);
-			case 3 : return parseInt($scope.result_2016[id][type]['Mar']);
-			case 4 : return parseInt($scope.result_2016[id][type]['Apr']);
-			case 5 : return parseInt($scope.result_2016[id][type]['May']);
-			case 6 : return parseInt($scope.result_2016[id][type]['Jun']);
-			case 7 : return parseInt($scope.result_2016[id][type]['Jul']);
-			case 8 : return parseInt($scope.result_2016[id][type]['Ago']);
-			case 9 : return parseInt($scope.result_2016[id][type]['Sep']);
-			case 10 : return parseInt($scope.result_2016[id][type]['Oct']);
-			case 11 : return parseInt($scope.result_2016[id][type]['Nov']);
-			case 12 : return parseInt($scope.result_2016[id][type]['Dec']);
+			case 1 : return parseInt($scope.result_2016[id][type][kpi]['Jan']);
+			case 2 : return parseInt($scope.result_2016[id][type][kpi]['Feb']);
+			case 3 : return parseInt($scope.result_2016[id][type][kpi]['Mar']);
+			case 4 : return parseInt($scope.result_2016[id][type][kpi]['Apr']);
+			case 5 : return parseInt($scope.result_2016[id][type][kpi]['May']);
+			case 6 : return parseInt($scope.result_2016[id][type][kpi]['Jun']);
+			case 7 : return parseInt($scope.result_2016[id][type][kpi]['Jul']);
+			case 8 : return parseInt($scope.result_2016[id][type][kpi]['Ago']);
+			case 9 : return parseInt($scope.result_2016[id][type][kpi]['Sep']);
+			case 10 : return parseInt($scope.result_2016[id][type][kpi]['Oct']);
+			case 11 : return parseInt($scope.result_2016[id][type][kpi]['Nov']);
+			case 12 : return parseInt($scope.result_2016[id][type][kpi]['Dec']);
 		}
 	}
 
-	function get_plan_by_month(id,month,operation) {
+	function get_plan_by_month(id,month,operation,kpi) {
 		switch (month) {
-			case 1 : return parseInt($scope.planed_2016[id][operation]['Jan']);
-			case 2 : return parseInt($scope.planed_2016[id][operation]['Feb']);
-			case 3 : return parseInt($scope.planed_2016[id][operation]['Mar']);
-			case 4 : return parseInt($scope.planed_2016[id][operation]['Apr']);
-			case 5 : return parseInt($scope.planed_2016[id][operation]['May']);
-			case 6 : return parseInt($scope.planed_2016[id][operation]['Jun']);
-			case 7 : return parseInt($scope.planed_2016[id][operation]['Jul']);
-			case 8 : return parseInt($scope.planed_2016[id][operation]['Ago']);
-			case 9 : return parseInt($scope.planed_2016[id][operation]['Sep']);
-			case 10 : return parseInt($scope.planed_2016[id][operation]['Oct']);
-			case 11 : return parseInt($scope.planed_2016[id][operation]['Nov']);
-			case 12 : return parseInt($scope.planed_2016[id][operation]['Dec']);
+			case 1 : return parseInt($scope.planed_2016[id][kpi][operation]['Jan']);
+			case 2 : return parseInt($scope.planed_2016[id][kpi][operation]['Feb']);
+			case 3 : return parseInt($scope.planed_2016[id][kpi][operation]['Mar']);
+			case 4 : return parseInt($scope.planed_2016[id][kpi][operation]['Apr']);
+			case 5 : return parseInt($scope.planed_2016[id][kpi][operation]['May']);
+			case 6 : return parseInt($scope.planed_2016[id][kpi][operation]['Jun']);
+			case 7 : return parseInt($scope.planed_2016[id][kpi][operation]['Jul']);
+			case 8 : return parseInt($scope.planed_2016[id][kpi][operation]['Ago']);
+			case 9 : return parseInt($scope.planed_2016[id][kpi][operation]['Sep']);
+			case 10 : return parseInt($scope.planed_2016[id][kpi][operation]['Oct']);
+			case 11 : return parseInt($scope.planed_2016[id][kpi][operation]['Nov']);
+			case 12 : return parseInt($scope.planed_2016[id][kpi][operation]['Dec']);
 		}
 	}
 
-	function get_planned(id,operation) {
+	function map_arch_by_kpi(analytics,kpi) {
+		switch (kpi) {
+			case 'open' : return analytics['total_approvals']['doc_count'];
+			case 'apd' : return analytics['total_approvals']['doc_count'];
+			case 're' : return analytics['total_realized']['doc_count'];
+			case 'cp' : return analytics['total_completed']['doc_count'];
+		}
+	}
+
+	function get_planned(id,operation,kpi) {
 		planned = 0;
 		for (m = parseInt($scope.selected_month_from); m <= parseInt($scope.selected_month_to); m++) {
-			planned += get_plan_by_month(parseInt(id),m,operation);
+			planned += get_plan_by_month(parseInt(id),m,operation,kpi);
 		}
 		return planned;
 	}
@@ -609,11 +648,10 @@ function AnalysisCtrl($scope,$http,$localStorage,$sessionStorage,$state,ListsSer
     			lcs = success.data['analytics']['children']['buckets'];
             	for (i in lcs) {
             		if (lcs[i]['key'] in $scope.lcs) {
-        				$scope.lcs[lcs[i]['key']]['total_approvals'] = lcs[i]['total_approvals'];
-        				$scope.lcs[lcs[i]['key']]['total_realized'] = lcs[i]['total_realized'];
-        				$scope.lcs[lcs[i]['key']]['cluster'] = $scope.result_2016[lcs[i]['key']]['OGX']['CLUSTER'];
-        				$scope.lcs[lcs[i]['key']]['plan'] = get_planned(lcs[i]['key'],$scope.selected_program);
-        				$scope.lcs[lcs[i]['key']]['arch'] = (get_planned(lcs[i]['key'],$scope.selected_program) == 0) ? 0 : (100*lcs[i]['total_approvals'].doc_count)/get_planned(lcs[i]['key'],$scope.selected_program);
+        				$scope.lcs[lcs[i]['key']]['ach'] = map_arch_by_kpi(lcs[i],$scope.selected_process);
+        				//$scope.lcs[lcs[i]['key']]['cluster'] = $scope.result_2016[lcs[i]['key']]['OGX']['CLUSTER'];
+        				$scope.lcs[lcs[i]['key']]['plan'] = get_planned(lcs[i]['key'],$scope.selected_program,$scope.selected_process);
+        				$scope.lcs[lcs[i]['key']]['ach_plan'] = (get_planned(lcs[i]['key'],$scope.selected_program,$scope.selected_process) == 0) ? 0 : (100* map_arch_by_kpi(lcs[i],$scope.selected_process) ) / get_planned(lcs[i]['key'],$scope.selected_program,$scope.selected_process);
             		}
             	}
             	$scope.lcs[1606]['total_approvals'] = success.data['analytics']['total_approvals'];
@@ -628,17 +666,18 @@ function AnalysisCtrl($scope,$http,$localStorage,$sessionStorage,$state,ListsSer
 			if ($scope.selected_program == 'oGV'|| $scope.selected_program == 'iGV') {
 				type = ($scope.selected_program == 'oGV') ? 'OGX' : 'ICX';
 				for (i in $scope.lcs) {
-					last_yead_apds = 0;
+					last_year_apds = 0;
 					for (m = parseInt($scope.selected_month_from); m <= parseInt($scope.selected_month_to); m++) {
-						last_yead_apds += get_apd_by_month(parseInt(i),m,type);
+						last_year_apds += get_apd_by_month(parseInt(i),m,type,$scope.selected_process);
 					}
-        			if (last_yead_apds > 0 && $scope.lcs[i]['total_approvals'] != undefined) {
-						$scope.lcs[i]['grow'] = ($scope.lcs[i]['total_approvals'].doc_count - last_yead_apds) / last_yead_apds * 100;
+        			if (last_year_apds > 0 && $scope.lcs[i]['ach'] != undefined) {
+						$scope.lcs[i]['grow'] = ($scope.lcs[i]['ach'] - last_year_apds) / last_year_apds * 100;
 					} else {
 						$scope.lcs[i]['grow'] = 0;
 					}
+					$scope.lcs[i]['old'] = last_year_apds;
 				}
-				console.log($scope.lcs);
+			    $scope.dtInstance.rerender();
 			} else {
 				AnalyticsService.get_application_analitics(localStorage.token,generateParams(1)).then(
 		    		function(success) {
@@ -646,11 +685,12 @@ function AnalysisCtrl($scope,$http,$localStorage,$sessionStorage,$state,ListsSer
 		    			lcs = success.data['analytics']['children']['buckets'];
 		            	for (i in lcs) {
 		            		if (lcs[i]['key'] in $scope.lcs) {
-		            			if (lcs[i]['total_approvals'].doc_count > 0) {
-		        					$scope.lcs[lcs[i]['key']]['grow'] = ($scope.lcs[lcs[i]['key']]['total_approvals'].doc_count - lcs[i]['total_approvals'].doc_count) / lcs[i]['total_approvals'].doc_count * 100;
+		            			if (lcs[i]['ach'] > 0) {
+		        					$scope.lcs[lcs[i]['key']]['grow'] = ($scope.lcs[lcs[i]['key']]['ach'] - lcs[i]['total_approvals'].doc_count) / lcs[i]['total_approvals'].doc_count * 100;
 		        				} else {
 		        					$scope.lcs[lcs[i]['key']]['grow'] = 0;
 		        				}
+		        				$scope.lcs[i]['old'] = lcs[i]['total_approvals'].doc_count;
 		            		}
 		            	}
 					    $scope.dtInstance.rerender();
@@ -666,17 +706,23 @@ function AnalysisCtrl($scope,$http,$localStorage,$sessionStorage,$state,ListsSer
     $scope.growth_style = function(grow) {
     	if (grow < 0) {
     		return 'color: red;';
-    	} else if (grow > 30) {
+    	} else if (grow >= 30) {
     		return 'color: blue;'
     	}
     }
 
-    $scope.arch_style = function(arch) {
-    	if (arch < 70) {
+    $scope.absolute_style = function(grow) {
+    	if (grow < 0) {
     		return 'color: red;';
-    	} else if (arch > 80) {
-    		return 'color: gree;';
-    	} else if (arch > 100) {
+    	}
+    }
+
+    $scope.arch_style = function(arch) {
+    	if (arch < 50 || arch == undefined) {
+    		return 'color: red;';
+    	} else if (arch >= 50 && arch < 80) {
+    		return 'color: green;';
+    	} else if (arch >= 80) {
     		return 'color: blue;';
     	}
     }
@@ -713,7 +759,7 @@ function AnalysisCtrl($scope,$http,$localStorage,$sessionStorage,$state,ListsSer
     ]; 
 }
 
-function PeopleCtrl($scope,$http,$localStorage,$uibModal,$timeout,ListsService) {
+function PeopleCtrl($scope,$http,$localStorage,$uibModal,$timeout,ListsService,PeopleService) {
 
 	$scope.error_msg = false;
     $scope.busy_scroll = false;
@@ -727,7 +773,6 @@ function PeopleCtrl($scope,$http,$localStorage,$uibModal,$timeout,ListsService) 
     $scope.status_filter = 'all';
     $scope.ops_filter = false;
     $scope.epi_filter = false;
-
 
     if ($localStorage.lcs == null) {
     	ListsService.get_lcs($localStorage.token).then(
@@ -750,40 +795,31 @@ function PeopleCtrl($scope,$http,$localStorage,$uibModal,$timeout,ListsService) 
     $scope.list = function() {
     	$scope.people = [];
     	$scope.loading_list = true;
-	    params = {
-	    	status: $scope.status_filter.toLowerCase(),
-	    	ops: $scope.ops_filter,
-	    	epi: $scope.epi_filter,
-	    	lc: $scope.selected_lc.id,
-	    	page: 0
-	    };
-	    $http.get('/disrupt/ogx/list', {params: params}).then(
+
+	    PeopleService.list($localStorage.token,1,undefined).then(
 	    	function successCallback(response) {
-	    		$scope.people = response.data;
-		    	$scope.loading_list = false;
+	    		$scope.people = response.data.data;
     			$scope.busy_scroll = (response.data.length < 30) ? true : false;
 	    		$scope.person = $scope.people[0];
+		    	$scope.loading_list = false;
+		    	console.log($scope.people);
 	    	}, function errorCallback(response) {
 	    		$scope.error_msg = true;
 		    	$scope.loading_list = false;
 	    	});
     };
+    $scope.list();
 
     $scope.list_more = function() {
     	$scope.busy_scroll = true;
     	$scope.loading_list = true;
-	    params = {
-	    	status: $scope.status_filter.toLowerCase(),
-	    	ops: $scope.ops_filter,
-	    	epi: $scope.epi_filter,
-	    	lc: $scope.selected_lc.id,
-	    	page: Math.floor($scope.people.length / 30)
-	    };
-	    $http.get('/disrupt/ogx/list', {params: params}).then(
+
+	    PeopleService.list($localStorage.token,Math.floor($scope.people.length / 30),undefined).then(
 	    	function successCallback(response) {
-    			$scope.people = $scope.people.concat(response.data);
+    			$scope.people = $scope.people.concat(response.data.data);
     			$scope.busy_scroll = (response.data.length < 30) ? true : false;
     			$scope.loading_list = false;
+		    	console.log($scope.people);
 	    	}, function errorCallback(response) {
 	    		$scope.error_msg = true;
     			$scope.loading_list = false;

@@ -211,6 +211,45 @@ function datatable() {
 }
 
 /**
+ * fullScroll - Directive for slimScroll with 100%
+ */
+function fullScroll($timeout){
+    return {
+        restrict: 'A',
+        link: function(scope, element) {
+            $timeout(function(){
+                element.slimscroll({
+                    height: '100%',
+                    railOpacity: 0.9
+                });
+
+            });
+        }
+    };
+}
+
+/**
+ * slimScroll - Directive for slimScroll with custom height
+ */
+function slimScroll($timeout){
+    return {
+        restrict: 'A',
+        scope: {
+            boxHeight: '@'
+        },
+        link: function(scope, element) {
+            $timeout(function(){
+                element.slimscroll({
+                    height: scope.boxHeight,
+                    railOpacity: 0.9
+                });
+
+            });
+        }
+    };
+}
+
+/**
  *
  * Pass all functions into module
  */
@@ -221,4 +260,6 @@ angular
     .directive('iboxTools', iboxTools)
     .directive('minimalizaSidebar', minimalizaSidebar)
     .directive('iboxToolsFullScreen', iboxToolsFullScreen)
-    .directive('datatable22', datatable);
+    .directive('datatable22', datatable)
+    .directive('slimScroll', slimScroll)
+    .directive('fullScroll', fullScroll);
