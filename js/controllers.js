@@ -321,7 +321,7 @@ function SigninCtrl($scope,$http,$location,$localStorage,$sessionStorage) {
 						$scope.message = 'Email or Password incorrect';
 					} else {
 						$localStorage.token = response.data['token'];
-						$location.path('/index/minor');
+						$location.path('/index/analysis');
 					}
 					$scope.loading = false;
 				}, function errorCallback(response) {
