@@ -656,7 +656,7 @@ function AnalysisCtrl($scope,$http,$localStorage,$sessionStorage,$state,ListsSer
             	}
             	$scope.lcs[1606]['total_approvals'] = success.data['analytics']['total_approvals'];
             	$scope.lcs[1606]['total_realized'] = success.data['analytics']['total_realized'];
-			    $scope.dtInstance.rerender();
+			    //$scope.dtInstance.rerender();
     			console.log($scope.lcs);
     		},
     		function(fail) {
