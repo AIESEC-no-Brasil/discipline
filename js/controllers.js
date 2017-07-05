@@ -429,7 +429,7 @@ function ExtractionCtrl($scope,$http,$localStorage,$sessionStorage,$state) {
 					person_name:$scope.applications[i].person.full_name,
 					person_email:$scope.applications[i].person.email,
 					person_lc:$scope.applications[i].person.home_lc.name,
-					opportunity_program:$scope.applications[i].opportunity.programmes[0]['short_name'],
+					opportunity_program:$scope.applications[i].opportunity.programmes['short_name'],
 					opportunity_id:$scope.applications[i].opportunity.id,
 					opportunity_title:$scope.applications[i].opportunity.title,
 					opportunity_location:$scope.applications[i].opportunity.location,
