@@ -405,8 +405,8 @@ function ExtractionCtrl($scope,$http,$localStorage,$sessionStorage,$state) {
 	    	$scope.applications = $scope.applications.concat(response.data.data);
 			$scope.logging += ' -> Got '+response.data.data.length+' applications of '+response.data.paging.total_items+' -> ';
 	    	p = generateParams(response.data.paging.current_page+1);
-	    	if(response.data.paging.current_page <= response.data.paging.total_pages) {
-	    		return $http.get('https://gis-api.aiesec.org:443//v2/applications.json', {params:p}).then(success, error);
+	    	if(response.data.paging.current_page <= response.data.paging.total_pages && response.data.paging.total_pages != 1) {
+	    		return $http.get('https://gis-api.aiesec.org:443/v2/applications.json', {params:p}).then(success, error);
 	    	} else {
 	    		console.log('FINISHED');
 	    		$scope.logging += ' -> FINISHED!!!'
